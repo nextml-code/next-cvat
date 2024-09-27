@@ -20,8 +20,10 @@ pytest = "^6.1.2"
 autoflake = "^1.6.1"
 pydantic-settings ="^2.5.2"
 
-
-
+[[tool.poetry.source]]
+name = "nextml"
+url = "https://api.packagr.app/882TAwUpj/"
+priority="explicit"
 
 [build-system]
 requires = ["poetry-core"]
