@@ -1,4 +1,4 @@
-from cvat_annotations import annotations
+from next_cvat import annotations
 from pathlib import Path
 from PIL import Image
 import numpy as np

@@ -1,4 +1,4 @@
-# CVAT Annotations
+# Next-cvat
 
 ## Description
 Downloads and decodes annotations on format CVAT for images 1.1
