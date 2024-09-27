@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "cvat-annotations"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+cvat-sdk = "^2.18.0"
+Pillow = "*"
+numpy = "^1.19.2"
+pydantic = "^2.0.0"
+
+[tool.poetry.dev-dependencies]
+pylint = "^2.6.0"
+flake8 = "^3.8.4"
+black = "^22.3.0"
+pytest = "^6.1.2"
+autoflake = "^1.6.1"
+pydantic-settings ="^2.5.2"
+
+
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
