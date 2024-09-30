@@ -12,6 +12,7 @@ from .annotation_types import (
     Mask,
     ImageAnnotation,
     Annotations,
+    Polyline,
 )
 
 
@@ -80,6 +81,16 @@ def annotations(xml_annotation_path) -> Annotations:
             ]
             masks.append(Mask(**mask.attrib, attributes=mask_attributes))
 
+        polylines = []
+        for polyline in image.findall("polyline"):
+            polyline_attributes = [
+                Attribute(name=attr.get("name"), value=attr.text)
+                for attr in polyline.findall("attribute")
+            ]
+            polylines.append(
+                Polyline(**polyline.attrib, attributes=polyline_attributes)
+            )
+
         images.append(
             ImageAnnotation(
                 id=image.get("id"),
@@ -91,6 +102,7 @@ def annotations(xml_annotation_path) -> Annotations:
                 boxes=boxes,
                 polygons=polygons,
                 masks=masks,
+                polylines=polylines,
             )
         )
 
