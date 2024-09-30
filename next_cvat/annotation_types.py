@@ -197,7 +197,7 @@ class Polyline(BaseModel):
     def topmost(self) -> float:
         return min([y for _, y in self.points])
 
-    def botttommost(self) -> float:
+    def bottommost(self) -> float:
         return max([y for _, y in self.points])
 
 
