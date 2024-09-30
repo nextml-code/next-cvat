@@ -194,6 +194,12 @@ class Polyline(BaseModel):
     def rightmost(self) -> float:
         return max([x for x, _ in self.points])
 
+    def topmost(self) -> float:
+        return min([y for _, y in self.points])
+
+    def botttommost(self) -> float:
+        return max([y for _, y in self.points])
+
 
 class ImageAnnotation(BaseModel):
     id: str
