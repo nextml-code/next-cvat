@@ -180,6 +180,7 @@ class Polyline(BaseModel):
     occluded: int
     points: List[Tuple[float, float]]
     z_order: int
+    attributes: List[Attribute]
 
     @field_validator("points", mode="before")
     def parse_points(cls, v):
