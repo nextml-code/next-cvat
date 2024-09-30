@@ -8,7 +8,6 @@ from PIL import Image, ImageDraw
 from pydantic import BaseModel, field_validator
 
 
-
 class Task(BaseModel):
     task_id: str
     url: str
@@ -157,9 +156,9 @@ class Mask(BaseModel):
         """
         small_mask = self.rle_decode()
         mask = np.zeros((height, width), dtype=bool)
-        mask[
-            self.top : self.top + self.height, self.left : self.left + self.width
-        ] = small_mask
+        mask[self.top : self.top + self.height, self.left : self.left + self.width] = (
+            small_mask
+        )
         return mask
 
     def rle_decode(self):
@@ -175,6 +174,27 @@ class Mask(BaseModel):
         return np.array(mask, dtype=bool).reshape(self.height, self.width)
 
 
+class Polyline(BaseModel):
+    label: str
+    source: str
+    occluded: int
+    points: List[Tuple[float, float]]
+    z_order: int
+
+    @field_validator("points", mode="before")
+    def parse_points(cls, v):
+        if isinstance(v, str):
+            return [tuple(map(float, point.split(","))) for point in v.split(";")]
+        else:
+            return v
+
+    def leftmost(self) -> float:
+        return min([x for x, _ in self.points])
+
+    def rightmost(self) -> float:
+        return max([x for x, _ in self.points])
+
+
 class ImageAnnotation(BaseModel):
     id: str
     name: str
@@ -185,6 +205,7 @@ class ImageAnnotation(BaseModel):
     boxes: List[Box] = []
     polygons: List[Polygon] = []
     masks: List[Mask] = []
+    polylines: List[Polyline] = []
 
 
 class Annotations(BaseModel):
