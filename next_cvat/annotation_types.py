@@ -228,9 +228,11 @@ class Annotations(BaseModel):
         :param image_name: Name of the image.
         :return: A CVAT link. E.g. https://app.cvat.ai/tasks/453747/jobs/520016
         """
+        images = list(sorted(self.images, key=lambda image: image.name))
+        
         # lookup task id for the given image name
         task_id = None
-        for image in self.images:
+        for image in images:
             if Path(image.name).name == image_name:
                 task_id = image.task_id
                 image_id = image.id
@@ -239,7 +241,7 @@ class Annotations(BaseModel):
             raise ValueError(f"Could not find task ID for image: {image_name}")
 
         frame_index = 0
-        for image in self.images:
+        for image in images:
             if image.task_id == task_id:
                 if Path(image.name).name == image_name:
                     break
