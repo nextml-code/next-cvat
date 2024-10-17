@@ -1,11 +1,13 @@
-from next_cvat import annotations
 from pathlib import Path
-from PIL import Image
+
 import numpy as np
+from PIL import Image
+
+from next_cvat import Annotations
 
 
 def test_mask_annotations():
-    annotations_data = annotations(Path("tests/mask_annotations.xml"))
+    annotations_data = Annotations.from_path("tests/mask_annotations.xml")
     assert len(annotations_data.images) == 1
     assert len(annotations_data.images[0].masks) == 3
 

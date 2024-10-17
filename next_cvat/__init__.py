@@ -1,12 +1,3 @@
-from .annotation_types import (
-    Task,
-    LabelAttribute,
-    Label,
-    Project,
-    Attribute,
-    Box,
-    Polygon,
-    Mask,
-)
-from .annotations import annotations
+from .annotations import Annotations
 from .download import download
+from .types import Attribute, Box, Label, LabelAttribute, Mask, Polygon, Project, Task

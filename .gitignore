@@ -8,6 +8,7 @@ dist
 build/
 _build/
 *.pyc
+.python-version
 
 AUTHORS
 ChangeLog
