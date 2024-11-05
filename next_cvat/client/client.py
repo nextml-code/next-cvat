@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import tempfile
+import zipfile
 from contextlib import contextmanager
-from pathlib import Path
 from typing import Generator
 
 from cvat_sdk import Client as CVATClient
@@ -46,6 +47,7 @@ class Client(BaseModel):
         with make_client(
             host="app.cvat.ai", credentials=(self.username, self.password)
         ) as client:
+            client.login((self.username, self.password))
             yield client
 
     @contextmanager
@@ -61,28 +63,32 @@ class Client(BaseModel):
 
             yield client
 
-    def list_projects(self) -> list:  # [Project]:
+    def create_token(self) -> AccessToken:
+        with self.basic_cvat_client() as client:
+            token = AccessToken.from_client_cookies(
+                cookies=client.api_client.cookies,
+                headers=client.api_client.default_headers,
+            )
+            return token
+
+    def list_projects(self):
         with self.cvat_client() as client:
             return list(client.projects.list())
 
-    # def download(self, project_id, dataset_path):
-    #     cvat = CVATConfig()
+    def download_(self, project_id, dataset_path):
+        with self.cvat_client() as cvat_client:
+            cvat_client: CVATClient
 
-    #     print(f"Downloading project {project_id} to {dataset_path}")
-    #     with make_client(
-    #         host="app.cvat.ai", credentials=(cvat.username, cvat.password)
-    #     ) as client:
-    #         client: CVATClient
+            project = cvat_client.projects.retrieve(project_id)
 
-    #         project = client.projects.retrieve(project_id)
+            print(f"Downloading project {project_id} to {dataset_path}")
+            with tempfile.TemporaryDirectory() as temp_dir:
+                temp_file_path = f"{temp_dir}/dataset.zip"
+                project.export_dataset(
+                    format_name="CVAT for images 1.1",
+                    filename=temp_file_path,
+                    include_images=True,
+                )
 
-    #         with tempfile.TemporaryDirectory() as temp_dir:
-    #             temp_file_path = f"{temp_dir}/dataset.zip"
-    #             project.export_dataset(
-    #                 format_name="CVAT for images 1.1",
-    #                 filename=temp_file_path,
-    #                 include_images=True,
-    #             )
-
-    #             with zipfile.ZipFile(temp_file_path, "r") as zip_ref:
-    #                 zip_ref.extractall(dataset_path)
+                with zipfile.ZipFile(temp_file_path, "r") as zip_ref:
+                    zip_ref.extractall(dataset_path)

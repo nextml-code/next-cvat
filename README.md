@@ -19,16 +19,19 @@ _Note that the token expires in 14 days._
 ### Download dataset
 
 ```python
-from next_cvat.download import download
+import next_cvat
 
 if __name__ == "__main__":
-    download(project_id="project-id", dataset_path="dataset-path")
+    next_cvat.Client.from_env_file(".env.cvat.secrets").download_(
+        project_id="project-id",
+        dataset_path="dataset-path",
+    )
 ```
 
 or using CLI:
 
 ```bash
-next_cvat download --project-id <project-id> --dataset-path <dataset-path>
+cvat download --project-id <project-id> --dataset-path <dataset-path>
 ```
 
 ### Load annotations
@@ -38,6 +41,12 @@ Create a secrets file .env.cvat.secrets:
 ```bash
 CVAT_USERNAME = "username"
 CVAT_PASSWORD = "password"
+```
+
+alternatively, you can use a token:
+
+```bash
+CVAT_TOKEN = "token"
 ```
 
 And then load annotations:
