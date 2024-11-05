@@ -9,6 +9,7 @@ build/
 _build/
 *.pyc
 .python-version
+.env.cvat.secrets
 
 AUTHORS
 ChangeLog
