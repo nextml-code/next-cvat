@@ -11,6 +11,12 @@ cvat-sdk = "^2.18.0"
 Pillow = "*"
 numpy = "^1.19.2"
 pydantic = "^2.0.0"
+typer = "^0.12.5"
+pydantic-settings = "^2.6.1"
+
+[tool.poetry.scripts]
+next-cvat = "next_cvat.__main__:main"
+cvat = "next_cvat.__main__:main"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.6.0"
@@ -24,6 +30,9 @@ pydantic-settings ="^2.5.2"
 name = "nextml"
 url = "https://api.packagr.app/882TAwUpj/"
 priority="explicit"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.7.1"
 
 [build-system]
 requires = ["poetry-core"]

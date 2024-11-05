@@ -173,6 +173,39 @@ class Mask(BaseModel):
             index += int(s[i])
         return np.array(mask, dtype=bool).reshape(self.height, self.width)
 
+    def rle_encode(self, mask: np.ndarray) -> str:
+        """
+        Encode a binary mask into an RLE string.
+
+        :param mask: A numpy 2D array of booleans.
+        :return: RLE string.
+        """
+        # Flatten the mask in row-major order
+        flat_mask = mask.flatten(order="C")
+        # Initialize the counts list
+        counts = []
+        # Initialize the previous pixel value and count
+        prev_pixel = flat_mask[0]
+        count = 1
+
+        # Iterate over the flattened mask starting from the second pixel
+        for pixel in flat_mask[1:]:
+            if pixel == prev_pixel:
+                count += 1
+            else:
+                counts.append(count)
+                count = 1
+                prev_pixel = pixel
+        counts.append(count)
+
+        # Ensure the RLE starts with the count of zeros (False pixels)
+        if flat_mask[0]:
+            counts = [0] + counts
+
+        # Convert counts to a comma-separated string
+        rle_string = ",".join(map(str, counts))
+        return rle_string
+
 
 class Polyline(BaseModel):
     label: str
@@ -213,3 +246,139 @@ class ImageAnnotation(BaseModel):
     polygons: List[Polygon] = []
     masks: List[Mask] = []
     polylines: List[Polyline] = []
+
+
+def test_rle_encode_decode():
+    """
+    Test that encoding a mask and then decoding it returns the original mask.
+    """
+    import numpy as np
+
+    # Create a random binary mask
+    height, width = 10, 10
+    original_mask = np.random.choice([False, True], size=(height, width))
+
+    # Create a Mask instance
+    mask_instance = Mask(
+        label="test",
+        source="test",
+        occluded=0,
+        z_order=0,
+        rle="",  # Will set this after encoding
+        top=0,
+        left=0,
+        height=height,
+        width=width,
+        attributes=[],
+    )
+
+    # Encode the original mask
+    mask_instance.rle = mask_instance.rle_encode(original_mask)
+
+    # Decode the RLE string back to a mask
+    decoded_mask = mask_instance.rle_decode()
+
+    # Verify that the original and decoded masks are the same
+    assert np.array_equal(
+        original_mask, decoded_mask
+    ), "The decoded mask does not match the original mask."
+
+
+def test_rle_decode_encode():
+    """
+    Test that decoding an RLE string and then encoding the mask returns the original RLE string.
+    """
+    import numpy as np
+
+    # Corrected RLE string with counts summing to 15 (total pixels)
+    original_rle = "0,3,2,5,4,1"
+    height = 5
+    width = 3  # Total pixels = 15
+
+    # Create a Mask instance with the original RLE
+    mask_instance = Mask(
+        label="test",
+        source="test",
+        occluded=0,
+        z_order=0,
+        rle=original_rle,
+        top=0,
+        left=0,
+        height=height,
+        width=width,
+        attributes=[],
+    )
+
+    # Decode the RLE string to get the mask
+    decoded_mask = mask_instance.rle_decode()
+
+    # Encode the mask back into an RLE string
+    encoded_rle = mask_instance.rle_encode(decoded_mask)
+
+    # Verify that the original and encoded RLE strings are the same
+    assert original_rle == encoded_rle, (
+        f"The encoded RLE does not match the original RLE.\n"
+        f"Original RLE: {original_rle}\n"
+        f"Encoded RLE: {encoded_rle}"
+    )
+
+
+def generate_random_rle(height, width):
+    import numpy as np
+
+    # Create a random binary mask
+    mask = np.random.choice([False, True], size=(height, width))
+
+    # Flatten the mask and encode it into an RLE string
+    flat_mask = mask.flatten(order="C")
+    counts = []
+    prev_pixel = flat_mask[0]
+    count = 1
+
+    for pixel in flat_mask[1:]:
+        if pixel == prev_pixel:
+            count += 1
+        else:
+            counts.append(count)
+            count = 1
+            prev_pixel = pixel
+    counts.append(count)
+
+    if flat_mask[0]:
+        counts = [0] + counts
+
+    rle_string = ",".join(map(str, counts))
+    return rle_string, height, width
+
+
+def test_rle_decode_encode_random():
+    """
+    Test that decoding and then encoding a random RLE string returns the original RLE string.
+    """
+
+    # Generate a random RLE string
+    height, width = 10, 10
+    original_rle, height, width = generate_random_rle(height, width)
+
+    # Create a Mask instance
+    mask_instance = Mask(
+        label="test",
+        source="test",
+        occluded=0,
+        z_order=0,
+        rle=original_rle,
+        top=0,
+        left=0,
+        height=height,
+        width=width,
+        attributes=[],
+    )
+
+    # Decode and then encode the RLE string
+    decoded_mask = mask_instance.rle_decode()
+    encoded_rle = mask_instance.rle_encode(decoded_mask)
+
+    # Verify that the original and encoded RLE strings are the same
+    assert (
+        original_rle == encoded_rle
+    ), "The encoded RLE does not match the original RLE."
