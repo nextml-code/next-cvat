@@ -1,8 +1,6 @@
 # next-cvat
 
-## Description
-
-Downloads and decodes annotations on format CVAT for images 1.1
+Downloads and decodes annotations on the format "CVAT for images 1.1".
 
 ## Usage
 
@@ -39,14 +37,14 @@ cvat download --project-id <project-id> --dataset-path <dataset-path>
 Create a secrets file .env.cvat.secrets:
 
 ```bash
-CVAT_USERNAME = "username"
-CVAT_PASSWORD = "password"
+CVAT_USERNAME=username
+CVAT_PASSWORD=password
 ```
 
 alternatively, you can use a token:
 
 ```bash
-CVAT_TOKEN = "token"
+CVAT_TOKEN=token
 ```
 
 And then load annotations:
@@ -55,4 +53,15 @@ And then load annotations:
 from next_cvat import Annotations
 
 annotations = Annotations.from_path("path/to/annotations.xml")
+```
+
+### Low-level API
+
+```python
+from next_cvat import Client
+
+client = Client.from_env_file(".env.cvat.secrets")
+
+with client.cvat_client() as cvat_client:
+    cvat_client.get_tasks()
 ```
