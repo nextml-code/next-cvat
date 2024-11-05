@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Optional
 
 import typer
 
@@ -10,7 +11,7 @@ from ..settings import settings
 
 
 def download(
-    project_id: str = typer.Option(..., "--project-id", help="CVAT project ID"),
+    project_id: int = typer.Option(..., "--project-id", help="CVAT project ID"),
     dataset_path: Path = typer.Option(
         ...,
         "--dataset-path",
@@ -18,7 +19,7 @@ def download(
         dir_okay=True,
         file_okay=False,
     ),
-    env_file: Path | None = typer.Option(
+    env_file: Optional[Path] = typer.Option(
         ".env.cvat.secrets",
         "--env-file",
         "-f",

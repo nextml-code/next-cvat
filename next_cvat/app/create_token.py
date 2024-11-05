@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Optional
 
 import typer
 
@@ -13,7 +14,7 @@ def create_token(
     interactive: bool = typer.Option(
         False, "--interactive", "-i", help="Prompt for credentials interactively"
     ),
-    env_file: Path | None = typer.Option(
+    env_file: Optional[Path] = typer.Option(
         None,
         "--env-file",
         "-f",
@@ -49,7 +50,6 @@ def create_token(
         cvat create-token  # uses .env.cvat.secrets or env vars, falls back to interactive
     """
     if interactive:
-        print("HELOOOOOOOO")
         username = typer.prompt("Enter your CVAT username")
         password = typer.prompt("Enter your CVAT password", hide_input=True)
     else:

@@ -3,7 +3,14 @@ import next_cvat
 
 client = next_cvat.Client.from_env_file(".env.cvat.secrets")
 
-projects = client.list_projects()
+client.list_projects()
+# %%
+
+
+project = client.list_projects()[0].fetch()
+# %%
+
+project.get_tasks()
 # %%
 
 
