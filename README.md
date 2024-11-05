@@ -4,7 +4,7 @@ Downloads and decodes annotations on the format "CVAT for images 1.1".
 
 ## Usage
 
-Create a secrets file .env.cvat.secrets:
+Either add environment variables to your global environment or create an env file.
 
 ```bash
 CVAT_USERNAME=username
@@ -32,7 +32,7 @@ import next_cvat
 
 if __name__ == "__main__":
     next_cvat.Client.from_env_file(".env.cvat.secrets").download_(
-        project_id="project-id",
+        project_id=1234,
         dataset_path="dataset-path",
     )
 ```
@@ -50,7 +50,7 @@ And then load annotations:
 ```python
 from next_cvat import Annotations
 
-annotations = Annotations.from_path("path/to/annotations.xml")
+annotations = Annotations.from_path("dataset-path/annotations.xml")
 ```
 
 ### Low-level API
