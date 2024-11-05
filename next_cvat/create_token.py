@@ -1,6 +1,5 @@
 import base64
 import json
-from typing import Optional
 
 from cvat_sdk import make_client
 
@@ -25,7 +24,9 @@ def create_token(username: str, password: str) -> str:
 def test_create_token():
     from pydantic_settings import BaseSettings
 
-    class Settings(BaseSettings, env_prefix="CVAT_", env_file=".env.cvat.secrets"):
+    class Settings(
+        BaseSettings, env_prefix="CVAT_", env_file=".env.cvat.secrets", extra="ignore"
+    ):
         username: str
         password: str
 

@@ -1,15 +1,19 @@
-from pathlib import Path
-from typing import Optional
+from __future__ import annotations
 
 from pydantic_settings import BaseSettings
 
 
-class Settings(BaseSettings):
-    username: Optional[str] = None
-    password: Optional[str] = None
+def settings(env_file: str | None = ".env.cvat.secrets", env_prefix: str | None = None):
+    if env_prefix is None:
+        env_prefix = "CVAT_"
+    else:
+        env_prefix = f"{env_prefix}_CVAT_"
 
-    def __init__(self, env_file: Optional[Path] = None):
-        env_files = [".env.cvat.secrets"]
-        if env_file:
-            env_files.insert(0, str(env_file))
-        super().__init__(_env_file=env_files, _env_prefix="CVAT_") 
+    class Settings(
+        BaseSettings, extra="ignore", env_file=env_file, env_prefix=env_prefix
+    ):
+        username: str | None = None
+        password: str | None = None
+        token: str | None = None
+
+    return Settings()
