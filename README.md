@@ -4,12 +4,23 @@ Downloads and decodes annotations on the format "CVAT for images 1.1".
 
 ## Usage
 
-### Create a token
+Create a secrets file .env.cvat.secrets:
 
-Interactively creates a token if you want to avoid using your username and password:
+```bash
+CVAT_USERNAME=username
+CVAT_PASSWORD=password
+```
+
+If you don't want to use your username and password, you can create a token:
 
 ```bash
 cvat create-token
+```
+
+And use it like this:
+
+```bash
+CVAT_TOKEN=token
 ```
 
 _Note that the token expires in 14 days._
@@ -33,19 +44,6 @@ cvat download --project-id <project-id> --dataset-path <dataset-path>
 ```
 
 ### Load annotations
-
-Create a secrets file .env.cvat.secrets:
-
-```bash
-CVAT_USERNAME=username
-CVAT_PASSWORD=password
-```
-
-alternatively, you can use a token:
-
-```bash
-CVAT_TOKEN=token
-```
 
 And then load annotations:
 
