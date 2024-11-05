@@ -13,6 +13,7 @@ numpy = "^1.19.2"
 pydantic = "^2.0.0"
 typer = "^0.12.5"
 pydantic-settings = "^2.6.1"
+eval-type-backport = { version = "*", python = "<3.10" }
 
 [tool.poetry.scripts]
 next-cvat = "next_cvat.__main__:main"
