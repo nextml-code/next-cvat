@@ -8,11 +8,13 @@ Downloads and decodes annotations on format CVAT for images 1.1
 
 ### Create a token
 
-Interactively creates a token to avoid having to use your password later:
+Interactively creates a token if you want to avoid using your username and password:
 
 ```bash
-next_cvat create_token
+cvat create-token
 ```
+
+_Note that the token expires in 14 days._
 
 ### Download dataset
 
