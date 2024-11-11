@@ -20,6 +20,47 @@ class Mask(BaseModel):
     width: int
     attributes: List[Attribute]
 
+    @classmethod
+    def from_segmentation(
+        cls,
+        label: str,
+        source: str,
+        occluded: int,
+        z_order: int,
+        segmentation: np.ndarray,
+        attributes: List[Attribute],
+    ) -> Mask:
+        # Find the bounding box of the segmentation
+        rows = np.any(segmentation, axis=1)
+        cols = np.any(segmentation, axis=0)
+
+        if not np.any(rows) or not np.any(cols):
+            raise ValueError("Cannot create mask from empty segmentation")
+
+        top = np.where(rows)[0][0]
+        bottom = np.where(rows)[0][-1] + 1
+        left = np.where(cols)[0][0]
+        right = np.where(cols)[0][-1] + 1
+
+        height = bottom - top
+        width = right - left
+
+        crop = segmentation[top:bottom, left:right]
+        rle = cls.rle_encode(crop)
+
+        return cls(
+            label=label,
+            source=source,
+            occluded=occluded,
+            z_order=z_order,
+            rle=rle,
+            top=top,
+            left=left,
+            height=height,
+            width=width,
+            attributes=attributes,
+        )
+
     def segmentation(self, height: int, width: int) -> np.ndarray:
         """
         Create a boolean segmentation mask for the polygon.

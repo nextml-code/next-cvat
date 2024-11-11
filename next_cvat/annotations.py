@@ -81,7 +81,9 @@ class Annotations(BaseModel):
                     Attribute(name=attr.get("name"), value=attr.text)
                     for attr in polygon.findall("attribute")
                 ]
-                polygons.append(Polygon(**polygon.attrib, attributes=polygon_attributes))
+                polygons.append(
+                    Polygon(**polygon.attrib, attributes=polygon_attributes)
+                )
 
             masks = []
             for mask in image.findall("mask"):
@@ -131,7 +133,7 @@ class Annotations(BaseModel):
         :return: A CVAT link. E.g. https://app.cvat.ai/tasks/453747/jobs/520016
         """
         images = list(sorted(self.images, key=lambda image: image.name))
-        
+
         # lookup task id for the given image name
         task_id = None
         for image in images:
@@ -160,3 +162,141 @@ class Annotations(BaseModel):
             raise ValueError(f"Could not find job ID for task ID: {task_id}")
 
         return f"https://app.cvat.ai/tasks/{task_id}/jobs/{job_id}?frame={frame_index}"
+
+    def to_xml_(self, path: Union[str, Path]) -> Annotations:
+        """
+        Save annotations to XML file in CVAT format.
+
+        Args:
+            path: Path where to save the XML file
+        """
+        root = ElementTree.Element("annotations")
+
+        # Add version
+        version = ElementTree.SubElement(root, "version")
+        version.text = self.version
+
+        # Add meta section with project info
+        meta = ElementTree.SubElement(root, "meta")
+        project = ElementTree.SubElement(meta, "project")
+
+        # Project details
+        project_id = ElementTree.SubElement(project, "id")
+        project_id.text = self.project.id
+
+        project_name = ElementTree.SubElement(project, "name")
+        project_name.text = self.project.name
+
+        created = ElementTree.SubElement(project, "created")
+        created.text = self.project.created
+
+        updated = ElementTree.SubElement(project, "updated")
+        updated.text = self.project.updated
+
+        # Add labels
+        labels_elem = ElementTree.SubElement(project, "labels")
+        for label in self.project.labels:
+            label_elem = ElementTree.SubElement(labels_elem, "label")
+
+            name = ElementTree.SubElement(label_elem, "name")
+            name.text = label.name
+
+            color = ElementTree.SubElement(label_elem, "color")
+            color.text = label.color
+
+            type_elem = ElementTree.SubElement(label_elem, "type")
+            type_elem.text = label.type
+
+            if label.attributes:
+                attrs_elem = ElementTree.SubElement(label_elem, "attributes")
+                for attr in label.attributes:
+                    attr_elem = ElementTree.SubElement(attrs_elem, "attribute")
+                    for key, value in attr.model_dump().items():
+                        if value is not None:
+                            attr_elem.set(key, str(value))
+
+        # Add tasks
+        if self.tasks:
+            tasks_elem = ElementTree.SubElement(project, "tasks")
+            for task in self.tasks:
+                task_elem = ElementTree.SubElement(tasks_elem, "task")
+                task_id = ElementTree.SubElement(task_elem, "id")
+                task_id.text = task.task_id
+
+                segments = ElementTree.SubElement(task_elem, "segments")
+                segment = ElementTree.SubElement(segments, "segment")
+                if task.url:
+                    url = ElementTree.SubElement(segment, "url")
+                    url.text = task.url
+
+        # Add image annotations
+        for image in self.images:
+            image_elem = ElementTree.Element("image")
+            image_elem.set("id", image.id)
+            image_elem.set("name", image.name)
+            if image.subset:
+                image_elem.set("subset", image.subset)
+            if image.task_id:
+                image_elem.set("task_id", image.task_id)
+            image_elem.set("width", str(image.width))
+            image_elem.set("height", str(image.height))
+
+            # Add boxes
+            for box in image.boxes:
+                box_elem = ElementTree.SubElement(image_elem, "box")
+                for key, value in box.model_dump().items():
+                    if key != "attributes" and value is not None:
+                        box_elem.set(key, str(value))
+
+                if box.attributes:
+                    for attr in box.attributes:
+                        attr_elem = ElementTree.SubElement(box_elem, "attribute")
+                        attr_elem.set("name", attr.name)
+                        attr_elem.text = attr.value
+
+            # Add polygons
+            for polygon in image.polygons:
+                poly_elem = ElementTree.SubElement(image_elem, "polygon")
+                for key, value in polygon.model_dump().items():
+                    if key != "attributes" and value is not None:
+                        poly_elem.set(key, str(value))
+
+                if polygon.attributes:
+                    for attr in polygon.attributes:
+                        attr_elem = ElementTree.SubElement(poly_elem, "attribute")
+                        attr_elem.set("name", attr.name)
+                        attr_elem.text = attr.value
+
+            # Add masks
+            for mask in image.masks:
+                mask_elem = ElementTree.SubElement(image_elem, "mask")
+                for key, value in mask.model_dump().items():
+                    if key != "attributes" and value is not None:
+                        mask_elem.set(key, str(value))
+
+                if mask.attributes:
+                    for attr in mask.attributes:
+                        attr_elem = ElementTree.SubElement(mask_elem, "attribute")
+                        attr_elem.set("name", attr.name)
+                        attr_elem.text = attr.value
+
+            # Add polylines
+            for polyline in image.polylines:
+                line_elem = ElementTree.SubElement(image_elem, "polyline")
+                for key, value in polyline.model_dump().items():
+                    if key != "attributes" and value is not None:
+                        line_elem.set(key, str(value))
+
+                if polyline.attributes:
+                    for attr in polyline.attributes:
+                        attr_elem = ElementTree.SubElement(line_elem, "attribute")
+                        attr_elem.set("name", attr.name)
+                        attr_elem.text = attr.value
+
+            root.append(image_elem)
+
+        # Create XML tree and save to file
+        tree = ElementTree.ElementTree(root)
+        tree.write(str(path), encoding="utf-8", xml_declaration=True)
+
+        return self

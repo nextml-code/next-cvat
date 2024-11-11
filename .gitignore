@@ -10,6 +10,7 @@ _build/
 *.pyc
 .python-version
 .env.cvat.secrets
+test-dir
 
 AUTHORS
 ChangeLog
