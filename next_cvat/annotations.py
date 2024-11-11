@@ -163,7 +163,7 @@ class Annotations(BaseModel):
 
         return f"https://app.cvat.ai/tasks/{task_id}/jobs/{job_id}?frame={frame_index}"
 
-    def to_xml_(self, path: Union[str, Path]) -> Annotations:
+    def save_xml_(self, path: Union[str, Path]) -> Annotations:
         """
         Save annotations to XML file in CVAT format.
 

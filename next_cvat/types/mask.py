@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from typing import List
+from typing import Any, Dict, List
 
 import numpy as np
+from cvat_sdk.api_client import models
+from PIL import Image
 from pydantic import BaseModel
 
 from .attribute import Attribute
@@ -27,9 +29,12 @@ class Mask(BaseModel):
         source: str,
         occluded: int,
         z_order: int,
-        segmentation: np.ndarray,
+        segmentation: np.ndarray | Image.Image,
         attributes: List[Attribute],
     ) -> Mask:
+        if isinstance(segmentation, Image.Image):
+            segmentation = np.array(segmentation)
+
         # Find the bounding box of the segmentation
         rows = np.any(segmentation, axis=1)
         cols = np.any(segmentation, axis=0)
@@ -88,7 +93,8 @@ class Mask(BaseModel):
             index += int(s[i])
         return np.array(mask, dtype=bool).reshape(self.height, self.width)
 
-    def rle_encode(self, mask: np.ndarray) -> str:
+    @classmethod
+    def rle_encode(cls, mask: np.ndarray) -> str:
         """
         Encode a binary mask into an RLE string.
 
@@ -120,6 +126,59 @@ class Mask(BaseModel):
         # Convert counts to a comma-separated string
         rle_string = ",".join(map(str, counts))
         return rle_string
+
+    def request(
+        self,
+        frame: int,
+        label_id: int,
+        group: int = 0,
+    ) -> models.LabeledShapeRequest:
+        """
+        Convert the mask to a CVAT shape format.
+
+        Args:
+            frame: The frame number this mask appears in
+            label_id: The ID of the label this mask is associated with
+            group: The group ID for this shape
+
+        Returns:
+            LabeledShapeRequest object for CVAT API
+        """
+        # Convert RLE string to list of floats
+        points = [float(x) for x in self.rle.split(",")]
+        
+        # Get the full mask to find the actual bounding box
+        mask = self.segmentation(height=2048, width=4096)
+        
+        # Find the bounding box coordinates
+        rows = np.any(mask, axis=1)
+        cols = np.any(mask, axis=0)
+        top = np.where(rows)[0][0]
+        bottom = np.where(rows)[0][-1]
+        left = np.where(cols)[0][0]
+        right = np.where(cols)[0][-1]
+        
+        # Add bounding box coordinates
+        points.extend([
+            float(left),    # x-offset
+            float(top),     # y-offset
+            float(right),   # right coordinate
+            float(bottom)   # bottom coordinate
+        ])
+
+        return models.LabeledShapeRequest(
+            type="mask",
+            occluded=bool(self.occluded),
+            z_order=self.z_order,
+            points=points,
+            rotation=0.0,
+            outside=False,
+            attributes=[attr.model_dump() for attr in self.attributes],
+            group=group,
+            source=self.source,
+            frame=frame,
+            label_id=label_id,
+        )
 
 
 def test_rle_decode_encode():
