@@ -3,7 +3,7 @@ from __future__ import annotations
 import tempfile
 import zipfile
 from contextlib import contextmanager
-from typing import Generator
+from typing import Any, Generator
 
 from cvat_sdk import Client as CVATClient
 from cvat_sdk import make_client
@@ -34,11 +34,14 @@ class Client(BaseModel):
         else:
             raise ValueError("No credentials found")
 
-    def cvat_client(self) -> CVATClient:
+    @contextmanager
+    def cvat_client(self) -> Generator[CVATClient, Any, Any]:
         if self.login_method() == "token":
-            return self.token_cvat_client()
+            with self.token_cvat_client() as client:
+                yield client
         elif self.login_method() == "basic":
-            return self.basic_cvat_client()
+            with self.basic_cvat_client() as client:
+                yield client
         else:
             raise ValueError("Unsupported login method")
 
@@ -74,6 +77,10 @@ class Client(BaseModel):
     def list_projects(self):
         with self.cvat_client() as client:
             return list(client.projects.list())
+
+    def project(self, project_id: int):
+        with self.cvat_client() as client:
+            return client.projects.retrieve(project_id)
 
     def download_(self, project_id, dataset_path):
         with self.cvat_client() as cvat_client:
