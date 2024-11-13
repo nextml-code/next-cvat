@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
+from pathlib import Path
 from typing import TYPE_CHECKING, Generator
 
 from cvat_sdk.core.proxies.tasks import Task as CVATTask
@@ -28,7 +29,12 @@ class Task(BaseModel):
     def job(self, job_id: int) -> Job:
         return Job(task=self, id=job_id)
 
-    def frame(self, frame_id: int | None = None, name: str | None = None) -> Frame:
+    def frame(
+        self,
+        frame_id: int | None = None,
+        name: str | None = None,
+        image_name: str | None = None,
+    ) -> Frame:
         frames = self.frames()
 
         frames = [
@@ -36,6 +42,7 @@ class Task(BaseModel):
             for frame in frames
             if (frame.id == frame_id or frame_id is None)
             and (frame.frame_info.name == name or name is None)
+            and (Path(frame.frame_info.name).name == image_name or image_name is None)
         ]
 
         if len(frames) >= 2:

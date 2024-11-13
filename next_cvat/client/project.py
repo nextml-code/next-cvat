@@ -54,8 +54,6 @@ class Project(BaseModel):
     def tasks(self) -> list[Task]:
         with self.client.cvat_client() as cvat_client:
             project = cvat_client.projects.retrieve(self.id)
-            print("count", project.tasks.count)
-            print("tasks", project.get_tasks())
             return [Task(project=self, id=task.id) for task in project.get_tasks()]
 
     def labels(

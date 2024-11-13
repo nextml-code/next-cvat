@@ -23,7 +23,7 @@ class JobAnnotations(BaseModel, arbitrary_types_allowed=True):
     ) -> JobAnnotations:
         label = self.job.task.project.label(name=mask.label)
 
-        frame = self.job.task.frame(name=image_name)
+        frame = self.job.task.frame(image_name=image_name)
 
         self.annotations["shapes"].append(
             mask.request(
