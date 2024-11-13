@@ -31,9 +31,10 @@ _Note that the token expires in 14 days._
 import next_cvat
 
 if __name__ == "__main__":
-    next_cvat.Client.from_env_file(".env.cvat.secrets").download_(
-        project_id=1234,
-        dataset_path="dataset-path",
+    (
+        next_cvat.Client.from_env_file(".env.cvat.secrets")
+        .project(1234)
+        .download_(dataset_path="dataset-path")
     )
 ```
 
@@ -51,6 +52,30 @@ And then load annotations:
 from next_cvat import Annotations
 
 annotations = Annotations.from_path("dataset-path/annotations.xml")
+```
+
+### Upload images
+
+```python
+import next_cvat
+
+client = next_cvat.Client.from_env()
+client.create_task_("batch-1", "images")
+client.create_job_("batch-1", "images")
+```
+
+### Update annotations
+
+```python
+from next_cvat import Annotations
+
+annotations = Annotations.from_path("dataset-path/annotations.xml")
+
+client = next_cvat.Client.from_env()
+# client.add_mask_(image_path="image-path", mask=next_cvat.Mask(...))
+
+client.image(image_path="image-path").add_mask_(mask=next_cvat.Mask(...))
+
 ```
 
 ### Low-level API

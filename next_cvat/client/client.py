@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import tempfile
-import zipfile
 from contextlib import contextmanager
 from typing import Any, Generator
 
@@ -11,6 +9,11 @@ from pydantic import BaseModel
 
 from next_cvat.access_token import AccessToken
 from next_cvat.settings import settings
+
+from .job import Job
+from .job_annotations import JobAnnotations
+from .project import Project
+from .task import Task
 
 
 class Client(BaseModel):
@@ -78,24 +81,14 @@ class Client(BaseModel):
         with self.cvat_client() as client:
             return list(client.projects.list())
 
-    def project(self, project_id: int):
-        with self.cvat_client() as client:
-            return client.projects.retrieve(project_id)
+    def project(self, project_id: int) -> Project:
+        return Project(client=self, id=project_id)
 
     def download_(self, project_id, dataset_path):
-        with self.cvat_client() as cvat_client:
-            cvat_client: CVATClient
+        return self.project(project_id=project_id).download_(dataset_path)
 
-            project = cvat_client.projects.retrieve(project_id)
 
-            print(f"Downloading project {project_id} to {dataset_path}")
-            with tempfile.TemporaryDirectory() as temp_dir:
-                temp_file_path = f"{temp_dir}/dataset.zip"
-                project.export_dataset(
-                    format_name="CVAT for images 1.1",
-                    filename=temp_file_path,
-                    include_images=True,
-                )
-
-                with zipfile.ZipFile(temp_file_path, "r") as zip_ref:
-                    zip_ref.extractall(dataset_path)
+Project.model_rebuild()
+Task.model_rebuild()
+Job.model_rebuild()
+JobAnnotations.model_rebuild()
