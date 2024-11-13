@@ -67,15 +67,21 @@ client.create_job_("batch-1", "images")
 ### Update annotations
 
 ```python
-from next_cvat import Annotations
+client = next_cvat.Client.from_env_file(".env.cvat.secrets")
 
-annotations = Annotations.from_path("dataset-path/annotations.xml")
+job = client.project(project_id).task(task_id).job(job_id)
 
-client = next_cvat.Client.from_env()
-# client.add_mask_(image_path="image-path", mask=next_cvat.Mask(...))
+annotations = job.annotations()
 
-client.image(image_path="image-path").add_mask_(mask=next_cvat.Mask(...))
+annotations.add_mask_(
+    next_cvat.Mask.from_segmentation(
+        segmentation=Image.open("tests/test_vegetation_mask.png"),
+        label="Deformation",
+    ),
+    image_name="20240916_000854_2011T_437.bmp",
+)
 
+job.update_annotations_(annotations)
 ```
 
 ### Low-level API
