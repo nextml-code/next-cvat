@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from next_cvat.access_token import AccessToken
 from next_cvat.settings import settings
 
+from .frame import Frame
 from .job import Job
 from .job_annotations import JobAnnotations
 from .project import Project
@@ -92,3 +93,4 @@ Project.model_rebuild()
 Task.model_rebuild()
 Job.model_rebuild()
 JobAnnotations.model_rebuild()
+Frame.model_rebuild()

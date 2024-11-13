@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import tempfile
 import zipfile
-from typing import TYPE_CHECKING
+from contextlib import contextmanager
+from typing import TYPE_CHECKING, Generator
 
 from cvat_sdk import Client as CVATClient
 from cvat_sdk.api_client import models
+from cvat_sdk.core.proxies.projects import Project as CVATProject
 from pydantic import BaseModel
 
 from .task import Task
@@ -18,9 +20,10 @@ class Project(BaseModel):
     client: Client
     id: int
 
-    def cvat(self) -> models.ProjectRead:
+    @contextmanager
+    def cvat(self) -> Generator[CVATProject, None, None]:
         with self.client.cvat_client() as client:
-            return client.projects.retrieve(self.id)
+            yield client.projects.retrieve(self.id)
 
     def download_(self, dataset_path) -> Project:
         with self.client.cvat_client() as cvat_client:
@@ -58,12 +61,23 @@ class Project(BaseModel):
     def labels(
         self, id: int | None = None, name: str | None = None
     ) -> list[models.Label]:
-        labels = self.cvat().get_labels()
+        with self.cvat() as cvat_project:
+            labels = cvat_project.get_labels()
 
-        if id is not None:
-            labels = [label for label in labels if label.id == id]
+            if id is not None:
+                labels = [label for label in labels if label.id == id]
 
-        if name is not None:
-            labels = [label for label in labels if label.name == name]
+            if name is not None:
+                labels = [label for label in labels if label.name == name]
 
-        return labels
+            return labels
+
+    def label(self, name: str) -> models.Label:
+        labels = self.labels(name=name)
+
+        if len(labels) == 0:
+            raise ValueError(f"Label with name {name} not found")
+        elif len(labels) >= 2:
+            raise ValueError(f"Multiple labels found with name {name}")
+        else:
+            return labels[0]

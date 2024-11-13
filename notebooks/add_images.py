@@ -12,8 +12,42 @@ job_id = 1442235
 task_id = 999670
 
 
+job = client.project(project_id).task(task_id).job(job_id)
 
-client.project(project_id).task(task_id)
+annotations = job.annotations()
+
+annotations.add_mask_(
+    next_cvat.Mask.from_segmentation(
+        segmentation=Image.open("tests/test_vegetation_mask.png"),
+        label="Deformation",
+    ),
+    image_name="20240916_000854_2011T_437.bmp",
+)
+
+job.update_annotations_(annotations)
+# %%
+
+
+# %%
+
+with client.project(project_id).task(task_id).cvat() as cvat_task:
+    print(cvat_task.get_frames_info())
+    print(cvat_task)
+# %%
+
+with client.project(project_id).cvat() as cvat_project:
+    # print(cvat_project.get_labels())
+    # print(cvat_project.get_annotations())
+
+    export = cvat_project.export()
+
+
+# %%
+
+
+with client.project(project_id).task(task_id).job(job_id).cvat() as cvat_job:
+    print(cvat_job)
+
 # %%
 
 cvat = client.project(project_id).labels(name="Deformation")[0]
@@ -25,9 +59,38 @@ client.project(project_id).tasks()
 
 # %%
 
-client.project(project_id).task(task_id).job(job_id).annotations().add_mask_(
 
 # %%
+
+job = client.project(project_id).task(task_id).job(job_id)
+# %%
+
+annotations = job.annotations().add_mask_(
+    next_cvat.Mask(
+        name="Deformation",
+        image=Image.open("tests/test_vegetation_mask.png"),
+    ),
+    image_path="example batch/20230120_122959_2011T_10132714_10134250.png",
+)
+
+job.update_annotations_(annotations)
+# %%
+
+
+task = client.project(project_id).task(task_id)
+# %%
+
+with task.cvat() as cvat_task:
+    print(cvat_task.get_tasks())
+# %%
+
+project = client.project(project_id)
+# %%
+
+with project.cvat() as cvat_project:
+    print(cvat_project.get_tasks())
+# %%
+
 
 cvat.to_dict()
 # %%
@@ -47,6 +110,10 @@ with client.cvat_client() as cvat_client:
     project = cvat_client.projects.retrieve(project_id)
 
     print(project.get_labels())
+
+    task = cvat_client.tasks.retrieve(task_id)
+
+    print(type(task))
 
 # %%
 
