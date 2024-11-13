@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from contextlib import contextmanager
+from typing import TYPE_CHECKING, Generator
 
 from cvat_sdk.api_client import models
 from pydantic import BaseModel
@@ -15,26 +16,23 @@ class Job(BaseModel):
     task: Task
     id: int
 
-    def cvat(self) -> models.TaskRead:
+    @contextmanager
+    def cvat(self) -> Generator[models.TaskRead, None, None]:
         with self.task.project.client.cvat_client() as cvat_client:
-            return cvat_client.jobs.retrieve(self.id)
+            yield cvat_client.jobs.retrieve(self.id)
 
     def annotations(self) -> JobAnnotations:
         with self.task.project.client.cvat_client() as cvat_client:
             return JobAnnotations(
                 job=self,
-                annotations=cvat_client.jobs.retrieve(self.id).get_annotations(),
+                annotations=cvat_client.jobs.retrieve(self.id)
+                .get_annotations()
+                .to_dict(),
             )
 
     def update_annotations_(self, annotations: JobAnnotations):
         with self.task.project.client.cvat_client() as cvat_client:
             annotations_request = annotations.request()
-            # annotations_request = models.LabeledDataRequest()
-            # annotations_request.version = annotations.version
-            # annotations_request.tags = annotations.tags
-            # annotations_request.shapes = annotations.shapes
-            # annotations_request.tracks = annotations.tracks
-
             return cvat_client.jobs.retrieve(self.id).set_annotations(
                 annotations_request
             )

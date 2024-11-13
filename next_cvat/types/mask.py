@@ -25,12 +25,12 @@ class Mask(BaseModel):
     @classmethod
     def from_segmentation(
         cls,
-        label: str,
-        source: str,
-        occluded: int,
-        z_order: int,
         segmentation: np.ndarray | Image.Image,
-        attributes: List[Attribute],
+        label: str,
+        source: str = "next-cvat",
+        occluded: int = 0,
+        z_order: int = 0,
+        attributes: List[Attribute] = [],
     ) -> Mask:
         if isinstance(segmentation, Image.Image):
             segmentation = np.array(segmentation)
@@ -146,10 +146,10 @@ class Mask(BaseModel):
         """
         # Convert RLE string to list of floats
         points = [float(x) for x in self.rle.split(",")]
-        
+
         # Get the full mask to find the actual bounding box
         mask = self.segmentation(height=2048, width=4096)
-        
+
         # Find the bounding box coordinates
         rows = np.any(mask, axis=1)
         cols = np.any(mask, axis=0)
@@ -157,14 +157,16 @@ class Mask(BaseModel):
         bottom = np.where(rows)[0][-1]
         left = np.where(cols)[0][0]
         right = np.where(cols)[0][-1]
-        
+
         # Add bounding box coordinates
-        points.extend([
-            float(left),    # x-offset
-            float(top),     # y-offset
-            float(right),   # right coordinate
-            float(bottom)   # bottom coordinate
-        ])
+        points.extend(
+            [
+                float(left),  # x-offset
+                float(top),  # y-offset
+                float(right),  # right coordinate
+                float(bottom),  # bottom coordinate
+            ]
+        )
 
         return models.LabeledShapeRequest(
             type="mask",
