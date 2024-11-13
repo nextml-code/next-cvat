@@ -1,9 +1,15 @@
+from pathlib import Path
+
+import pytest
 from PIL import Image
 
 import next_cvat
 
 
 def test_add_mask():
+    if not Path(".env.cvat.secrets").exists():
+        pytest.skip("No secrets file found")
+
     client = next_cvat.Client.from_env_file(".env.cvat.secrets")
 
     project_id = 198488
