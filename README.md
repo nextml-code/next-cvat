@@ -56,6 +56,8 @@ annotations = Annotations.from_path("dataset-path/annotations.xml")
 
 ### Upload images
 
+Work in progress.
+
 ```python
 import next_cvat
 
