@@ -33,3 +33,20 @@ with client.cvat_client() as cvat_client:
     job.set_annotations(request)
 
 # %%
+
+
+job_annotations = client.project(project_id).task(task_id).job(job_id).annotations()
+
+job_annotations.add_mask_(mask)
+
+
+client.project(project_id).task(task_id).job(job_id).set_annotations(job_annotations)
+
+
+# job_annotations = client.project(project_id).task(task_id).job(job_id).image()
+
+# %%
+
+
+
+# %%
