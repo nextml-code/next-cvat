@@ -12,9 +12,17 @@ job_id = 1442235
 task_id = 999670
 
 
-job = client.project(project_id).task(task_id).job(job_id)
+# job = client.project(project_id).task(task_id).job(job_id)
 
+
+client.project(project_id).task(task_id).frames()[0]
+# %%
+
+
+
+# %%
 annotations = job.annotations()
+
 
 annotations.add_mask_(
     next_cvat.Mask.from_segmentation(
