@@ -6,6 +6,7 @@ from PIL import Image
 from next_cvat import Annotations
 
 
+
 def test_mask_annotations():
     annotations_data = Annotations.from_path("tests/mask_annotations.xml")
     assert len(annotations_data.images) == 1
