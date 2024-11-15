@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
+from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING, Generator
 
@@ -54,6 +55,10 @@ class Task(BaseModel):
         else:
             return frames[0]
 
+    def __hash__(self) -> int:
+        return hash(self.model_dump_json())
+
+    @lru_cache
     def frames(self) -> list[Frame]:
         with self.cvat() as cvat_task:
             return [

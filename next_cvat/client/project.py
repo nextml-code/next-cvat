@@ -3,6 +3,7 @@ from __future__ import annotations
 import tempfile
 import zipfile
 from contextlib import contextmanager
+from functools import lru_cache
 from typing import TYPE_CHECKING, Generator
 
 from cvat_sdk import Client as CVATClient
@@ -56,6 +57,10 @@ class Project(BaseModel):
             project = cvat_client.projects.retrieve(self.id)
             return [Task(project=self, id=task.id) for task in project.get_tasks()]
 
+    def __hash__(self) -> int:
+        return hash(self.model_dump_json())
+
+    @lru_cache
     def labels(
         self, id: int | None = None, name: str | None = None
     ) -> list[models.Label]:

@@ -35,6 +35,12 @@ class Mask(BaseModel):
         if isinstance(segmentation, Image.Image):
             segmentation = np.array(segmentation)
 
+        # Handle RGB/RGBA images by taking mean across color channels
+        if len(segmentation.shape) == 3:
+            segmentation = segmentation.mean(axis=2) > 0
+        else:
+            segmentation = segmentation > 0
+
         # Find the bounding box of the segmentation
         rows = np.any(segmentation, axis=1)
         cols = np.any(segmentation, axis=0)
@@ -181,6 +187,72 @@ class Mask(BaseModel):
             frame=frame,
             label_id=label_id,
         )
+
+    def pil_image(
+        self, height: int | None = None, width: int | None = None
+    ) -> Image.Image:
+        """
+        Convert the mask to a PIL Image.
+
+        Args:
+            height: Optional height of the output image. If None, uses the mask's height
+            width: Optional width of the output image. If None, uses the mask's width
+
+        Returns:
+            PIL Image containing the mask (black and white)
+        """
+        if height is None and width is None:
+            # If no dimensions provided, use the cropped mask
+            mask_array = self.rle_decode()
+        else:
+            # If dimensions provided, use full segmentation
+            mask_array = self.segmentation(
+                height=height or self.height, width=width or self.width
+            )
+
+        # Convert boolean array to uint8 (0 and 255)
+        mask_array = mask_array.astype(np.uint8) * 255
+        return Image.fromarray(mask_array, mode="L")
+
+    def _repr_html_(self) -> str:
+        img = self.pil_image()
+        import base64
+        from io import BytesIO
+
+        buffered = BytesIO()
+        img.save(buffered, format="PNG")
+        img_str = base64.b64encode(buffered.getvalue()).decode()
+
+        return f"""
+        <div style="
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            max-width: 800px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <div style="
+                padding: 15px;
+                background: #ffffff;
+                border-bottom: 1px solid #eee;">
+                <div style="color: #444; line-height: 1.6;">
+                    <span style="color: #666; display: inline-block; width: 80px;">Label:</span>
+                    <span style="font-weight: 500;">{self.label}</span><br>
+                    <span style="color: #666; display: inline-block; width: 80px;">Position:</span>
+                    <span style="font-weight: 500;">({self.left}, {self.top})</span><br>
+                    <span style="color: #666; display: inline-block; width: 80px;">Size:</span>
+                    <span style="font-weight: 500;">{self.width} × {self.height}px</span><br>
+                    <span style="color: #666; display: inline-block; width: 80px;">Z-order:</span>
+                    <span style="font-weight: 500;">{self.z_order}</span>
+                </div>
+            </div>
+            <div style="padding: 15px; text-align: center;">
+                <img src="data:image/png;base64,{img_str}" 
+                     style="max-width: 100%; height: auto; border-radius: 4px;" />
+            </div>
+        </div>
+        """
 
 
 def test_rle_decode_encode():
