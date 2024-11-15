@@ -153,22 +153,17 @@ class Mask(BaseModel):
         # Convert RLE string to list of floats
         points = [float(x) for x in self.rle.split(",")]
 
-        # Get the full mask to find the actual bounding box
-        mask = self.segmentation(height=2048, width=4096)
-
-        # Find the bounding box coordinates
-        rows = np.any(mask, axis=1)
-        cols = np.any(mask, axis=0)
-        top = np.where(rows)[0][0]
-        bottom = np.where(rows)[0][-1]
-        left = np.where(cols)[0][0]
-        right = np.where(cols)[0][-1]
+        # Use the stored dimensions for bounding box
+        right = self.left + self.width - 1  # Subtract 1 because coordinates are 0-based
+        bottom = (
+            self.top + self.height - 1
+        )  # Subtract 1 because coordinates are 0-based
 
         # Add bounding box coordinates
         points.extend(
             [
-                float(left),  # x-offset
-                float(top),  # y-offset
+                float(self.left),  # x-offset
+                float(self.top),  # y-offset
                 float(right),  # right coordinate
                 float(bottom),  # bottom coordinate
             ]
