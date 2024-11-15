@@ -87,7 +87,8 @@ class Mask(BaseModel):
         )
         return mask
 
-    def rle_decode(self):
+    def rle_decode_slow(self) -> np.ndarray:
+        """Original slower but verified implementation."""
         s = self.rle.split(",")
         mask = np.empty((self.height * self.width), dtype=bool)
         index = 0
@@ -97,25 +98,16 @@ class Mask(BaseModel):
             else:
                 mask[index : index + int(s[i])] = True
             index += int(s[i])
-        return np.array(mask, dtype=bool).reshape(self.height, self.width)
+        return mask.reshape(self.height, self.width)
 
     @classmethod
-    def rle_encode(cls, mask: np.ndarray) -> str:
-        """
-        Encode a binary mask into an RLE string.
-
-        :param mask: A numpy 2D array of booleans.
-        :return: RLE string.
-        """
-        # Flatten the mask in row-major order
+    def rle_encode_slow(cls, mask: np.ndarray) -> str:
+        """Original slower but verified implementation."""
         flat_mask = mask.flatten(order="C")
-        # Initialize the counts list
         counts = []
-        # Initialize the previous pixel value and count
         prev_pixel = flat_mask[0]
         count = 1
 
-        # Iterate over the flattened mask starting from the second pixel
         for pixel in flat_mask[1:]:
             if pixel == prev_pixel:
                 count += 1
@@ -125,13 +117,49 @@ class Mask(BaseModel):
                 prev_pixel = pixel
         counts.append(count)
 
-        # Ensure the RLE starts with the count of zeros (False pixels)
         if flat_mask[0]:
             counts = [0] + counts
 
-        # Convert counts to a comma-separated string
-        rle_string = ",".join(map(str, counts))
-        return rle_string
+        return ",".join(map(str, counts))
+
+    def rle_decode(self) -> np.ndarray:
+        """Optimized RLE decoding."""
+        counts = np.array([int(x) for x in self.rle.split(",")])
+        total_pixels = self.height * self.width
+        
+        # Calculate positions where values change
+        positions = np.cumsum(counts)
+        
+        # Create an array of indices
+        indices = np.arange(total_pixels)
+        
+        # Calculate which segment each index belongs to
+        segment_indices = np.searchsorted(positions, indices, side='right')
+        
+        # Odd-numbered segments should be True
+        mask = segment_indices % 2 == 1
+        
+        return mask.reshape(self.height, self.width)
+
+    @classmethod
+    def rle_encode(cls, mask: np.ndarray) -> str:
+        """Optimized RLE encoding."""
+        flat_mask = mask.ravel()  # faster than flatten()
+        if len(flat_mask) == 0:
+            return "0"
+
+        # Find runs using concatenated array trick
+        n = len(flat_mask)
+        runs = np.concatenate(
+            ([0], np.where(flat_mask[1:] != flat_mask[:-1])[0] + 1, [n])
+        )
+        counts = np.diff(runs)
+
+        # Handle case where mask starts with True
+        if flat_mask[0]:
+            counts = np.concatenate(([0], counts))
+
+        return ",".join(map(str, counts))
 
     def request(
         self,
