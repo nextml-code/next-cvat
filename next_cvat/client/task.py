@@ -36,6 +36,15 @@ class Task(BaseModel):
         name: str | None = None,
         image_name: str | None = None,
     ) -> Frame:
+        params = {
+            "frame_id": frame_id,
+            "name": name,
+            "image_name": image_name,
+        }
+        image_identifier_string = ", ".join(
+            f"{k}={v}" for k, v in params.items() if v is not None
+        )
+
         frames = self.frames()
 
         frames = [
@@ -47,11 +56,9 @@ class Task(BaseModel):
         ]
 
         if len(frames) >= 2:
-            raise ValueError(
-                f"Multiple frames found with id {frame_id} and name {name}"
-            )
+            raise ValueError(f"Multiple frames found for {image_identifier_string}")
         elif len(frames) == 0:
-            raise ValueError(f"Frame with id {frame_id} and name {name} not found")
+            raise ValueError(f"Frame for {image_identifier_string} not found")
         else:
             return frames[0]
 
