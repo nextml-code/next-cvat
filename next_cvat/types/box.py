@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import List
 
+import numpy as np
 from pydantic import BaseModel
 
 from .attribute import Attribute
@@ -34,3 +35,6 @@ class Box(BaseModel):
             z_order=self.z_order,
             attributes=self.attributes,
         )
+
+    def segmentation(self, height: int, width: int) -> np.ndarray:
+        return self.polygon().segmentation(height, width)
