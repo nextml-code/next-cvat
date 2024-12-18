@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from typing import Optional
+
 from pydantic import BaseModel
 
 
 class Attribute(BaseModel):
     name: str
-    value: str
+    value: Optional[str]
