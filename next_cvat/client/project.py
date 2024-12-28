@@ -46,8 +46,62 @@ class Project(BaseModel):
 
         return self
 
-    def create_task_(self, name: str):
-        pass
+    def create_task_(
+        self,
+        name: str,
+        image_quality: int = 70,
+    ) -> Task:
+        """
+        Create a new task in this project.
+        
+        Args:
+            name: Name of the task
+            image_quality: Image quality (0-100) for compressed images
+            
+        Returns:
+            Task object representing the created task
+        """
+        with self.client.cvat_client() as client:
+            # Get project details to get the organization ID and labels
+            project = client.projects.retrieve(self.id)
+            labels = project.get_labels()
+            
+            # Create task with project's labels
+            spec = models.TaskWriteRequest(
+                name=name,
+                organization=4493,  # NextML AB organization ID
+                status="annotation",
+                labels=[
+                    models.PatchedLabelRequest(
+                        name=label.name,
+                        color=label.color,
+                        type=label.type,
+                        attributes=[
+                            models.PatchedAttributeRequest(
+                                name=attr.name,
+                                mutable=attr.mutable,
+                                input_type=attr.input_type,
+                                default_value=attr.default_value,
+                                values=attr.values,
+                            )
+                            for attr in label.attributes
+                        ] if label.attributes else [],
+                    )
+                    for label in labels
+                ],
+            )
+            task = client.tasks.create(spec=spec)
+            
+            # Associate task with project
+            task_id = task.id
+            client.tasks.api.partial_update(
+                task_id,
+                patched_task_write_request=models.PatchedTaskWriteRequest(
+                    project_id=self.id,
+                ),
+            )
+            
+            return Task(project=self, id=task_id)
 
     def task(self, task_id: int) -> Task:
         return Task(project=self, id=task_id)
@@ -84,3 +138,13 @@ class Project(BaseModel):
             raise ValueError(f"Multiple labels found with name {name}")
         else:
             return labels[0]
+
+    def delete_task_(self, task_id: int) -> None:
+        """
+        Delete a task from this project.
+        
+        Args:
+            task_id: ID of the task to delete
+        """
+        with self.client.cvat_client() as client:
+            client.tasks.api.destroy(task_id)

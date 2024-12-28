@@ -56,14 +56,25 @@ annotations = Annotations.from_path("dataset-path/annotations.xml")
 
 ### Upload images
 
-Work in progress.
+Create a new task and upload images to it:
 
 ```python
 import next_cvat
+from pathlib import Path
 
 client = next_cvat.Client.from_env()
-client.create_task_("batch-1", "images")
-client.create_job_("batch-1", "images")
+
+# Create a new task
+task = client.create_task("My Task", project_id=1234)
+
+# Upload images
+client.upload_images_(
+    task.id,
+    [
+        Path("images/image1.jpg"),
+        Path("images/image2.jpg"),
+    ]
+)
 ```
 
 ### Update annotations

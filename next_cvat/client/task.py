@@ -3,7 +3,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 from functools import lru_cache
 from pathlib import Path
-from typing import TYPE_CHECKING, Generator
+from typing import TYPE_CHECKING, Generator, List, Union
 
 from cvat_sdk.core.proxies.tasks import Task as CVATTask
 from pydantic import BaseModel
@@ -72,3 +72,28 @@ class Task(BaseModel):
                 Frame(task=self, id=frame_id, frame_info=frame_info)
                 for frame_id, frame_info in enumerate(cvat_task.get_frames_info())
             ]
+
+    def upload_images_(
+        self,
+        image_paths: Union[str, Path, List[Union[str, Path]]],
+        image_quality: int = 70,
+    ) -> None:
+        """
+        Upload images to this task
+        
+        Args:
+            image_paths: Path or list of paths to images
+            image_quality: Image quality (0-100) for compressed images
+        """
+        if isinstance(image_paths, (str, Path)):
+            image_paths = [image_paths]
+        
+        image_paths = [Path(p) for p in image_paths]
+        
+        with self.cvat() as cvat_task:
+            cvat_task.upload_data(
+                resources=image_paths,
+                params={
+                    "image_quality": image_quality,
+                }
+            )
