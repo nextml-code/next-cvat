@@ -62,46 +62,22 @@ class Project(BaseModel):
             Task object representing the created task
         """
         with self.client.cvat_client() as client:
-            # Get project details to get the organization ID and labels
+            # Get project details to get the organization ID
             project = client.projects.retrieve(self.id)
-            labels = project.get_labels()
             
-            # Create task with project's labels
+            # Set organization header
+            client.api_client.set_default_header('X-Organization', 'NextMLAB')
+            
+            # Create task in the project
             spec = models.TaskWriteRequest(
                 name=name,
-                organization=4493,  # NextML AB organization ID
+                project_id=self.id,
+                organization=project.organization,
+                image_quality=image_quality,
                 status="annotation",
-                labels=[
-                    models.PatchedLabelRequest(
-                        name=label.name,
-                        color=label.color,
-                        type=label.type,
-                        attributes=[
-                            models.PatchedAttributeRequest(
-                                name=attr.name,
-                                mutable=attr.mutable,
-                                input_type=attr.input_type,
-                                default_value=attr.default_value,
-                                values=attr.values,
-                            )
-                            for attr in label.attributes
-                        ] if label.attributes else [],
-                    )
-                    for label in labels
-                ],
             )
             task = client.tasks.create(spec=spec)
-            
-            # Associate task with project
-            task_id = task.id
-            client.tasks.api.partial_update(
-                task_id,
-                patched_task_write_request=models.PatchedTaskWriteRequest(
-                    project_id=self.id,
-                ),
-            )
-            
-            return Task(project=self, id=task_id)
+            return Task(project=self, id=task.id)
 
     def task(self, task_id: int) -> Task:
         return Task(project=self, id=task_id)
