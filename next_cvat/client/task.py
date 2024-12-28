@@ -30,6 +30,11 @@ class Task(BaseModel):
     def job(self, job_id: int) -> Job:
         return Job(task=self, id=job_id)
 
+    def jobs(self) -> list[Job]:
+        """Get all jobs associated with this task."""
+        with self.cvat() as cvat_task:
+            return [Job(task=self, id=job.id) for job in cvat_task.get_jobs()]
+
     def frame(
         self,
         frame_id: int | None = None,

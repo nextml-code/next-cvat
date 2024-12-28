@@ -49,6 +49,20 @@ def test_create_task():
         assert frames[0].frame_info.width == 100, f"Expected width 100, got {frames[0].frame_info.width}"
         print("Verified image was uploaded successfully")
 
+        # Check job status
+        print("\nChecking job status...")
+        jobs = task.jobs()
+        assert len(jobs) > 0, "No jobs found for task"
+        print(f"Found {len(jobs)} jobs")
+
+        # Check each job's state and stage
+        for job in jobs:
+            print(f"Job {job.id}:")
+            print(f"  State: {job.state()}")
+            print(f"  Stage: {job.stage()}")
+            assert job.state() == "new", "New job should be in 'new' state"
+            assert job.stage() == "annotation", "New job should be in 'annotation' stage"
+
     finally:
         # Clean up
         print("Cleaning up...")
