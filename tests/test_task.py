@@ -4,6 +4,8 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
+from next_cvat import Client
+
 
 def create_test_image():
     """Create a test image in memory."""
@@ -14,7 +16,13 @@ def create_test_image():
     return img_byte_arr
 
 
-def test_delete_frame(cvat_client, tmp_path):
+def test_delete_frame(tmp_path):
+    if not Path(".env.cvat.secrets").exists():
+        pytest.skip("No .env.cvat.secrets file found")
+
+    cvat_client = Client.from_env_file(".env.cvat.secrets")
+
+
     # Get a test project
     project = cvat_client.project(217969)
 
