@@ -1,6 +1,6 @@
 # Client
 
-The `Client` class is the main entry point for interacting with CVAT.
+The `Client` class is the main entry point for interacting with CVAT through next-cvat.
 
 ::: next_cvat.client.client.Client
 handler: python

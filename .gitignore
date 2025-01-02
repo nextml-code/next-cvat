@@ -11,6 +11,7 @@ _build/
 .python-version
 .env.cvat.secrets
 test-dir
+site/
 
 AUTHORS
 ChangeLog

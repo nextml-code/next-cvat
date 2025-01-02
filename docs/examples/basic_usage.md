@@ -1,6 +1,6 @@
 # Basic Usage
 
-This guide shows you how to get started with Next CVAT.
+This guide shows you how to get started with next-cvat.
 
 ## Authentication
 

@@ -1,6 +1,6 @@
 # Working with Jobs
 
-This guide shows you how to work with CVAT jobs using Next CVAT.
+This guide shows you how to work with CVAT jobs using next-cvat.
 
 ## Getting Job Information
 

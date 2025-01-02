@@ -1,6 +1,6 @@
 # Working with Tasks
 
-This guide shows you how to work with CVAT tasks using Next CVAT.
+This guide shows you how to work with CVAT tasks using next-cvat.
 
 ## Creating Tasks
 
