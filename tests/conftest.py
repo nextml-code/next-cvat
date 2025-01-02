@@ -34,18 +34,4 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers",
         "codeblocks: mark test to be collected from code blocks",
-    )
-    
-    # Register fixtures for code block tests
-    config.addinivalue_line(
-        "codeblocks_test_namespace",
-        "client = client",
-    )
-    config.addinivalue_line(
-        "codeblocks_test_namespace",
-        "project = project",
-    )
-    config.addinivalue_line(
-        "codeblocks_test_namespace",
-        "tmp_image = tmp_image",
     ) 

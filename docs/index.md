@@ -1,4 +1,4 @@
-# Next CVAT
+# next-cvat
 
 A Python library for interacting with CVAT (Computer Vision Annotation Tool).
 

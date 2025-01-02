@@ -39,11 +39,17 @@ class Project(BaseModel):
             # Get job status for all tasks
             job_status = []
             for task in self.tasks():
-                cvat_task = cvat_client.tasks.retrieve(task.id)
-                task_name = cvat_task.name
-                for job in task.jobs():
-                    cvat_job = cvat_client.jobs.retrieve(job.id)
-                    job_status.append(JobStatus.from_job(cvat_job, task_name))
+                try:
+                    cvat_task = cvat_client.tasks.retrieve(task.id)
+                    task_name = cvat_task.name
+                    for job in task.jobs():
+                        try:
+                            cvat_job = cvat_client.jobs.retrieve(job.id)
+                            job_status.append(JobStatus.from_job(cvat_job, task_name))
+                        except Exception as e:
+                            print(f"Error getting job status for job {job.id}: {e}")
+                except Exception as e:
+                    print(f"Error getting task {task.id}: {e}")
 
             # Save job status
             with open(dataset_path / "job_status.json", "w") as f:
@@ -51,49 +57,65 @@ class Project(BaseModel):
 
             # Download annotations for each task
             for task in self.tasks():
-                cvat_task = cvat_client.tasks.retrieve(task.id)
-                task_name = cvat_task.name
-                print(f"\nProcessing task: {task_name} (ID: {task.id})")
-                task_path = dataset_path / task_name
-                task_path.mkdir(exist_ok=True)
+                try:
+                    cvat_task = cvat_client.tasks.retrieve(task.id)
+                    task_name = cvat_task.name
+                    print(f"\nProcessing task: {task_name} (ID: {task.id})")
+                    task_path = dataset_path / task_name
+                    task_path.mkdir(exist_ok=True)
 
-                # Download frames
-                for frame in task.frames():
-                    print(f"\nFrame info: {frame.frame_info}")
-                    print(f"Frame ID: {frame.id}")
-                    print(f"Frame attributes: {dir(frame)}")
-                    
-                    frame_path = task_path / frame.frame_info['name']
-                    print(f"Saving frame to: {frame_path}")
-                    
+                    # Download frames
                     try:
-                        frame_data = cvat_task.get_frame(frame.id)
-                        print(f"Frame data type: {type(frame_data)}")
-                        print(f"Frame data attributes: {dir(frame_data)}")
-                        
-                        with open(frame_path, "wb") as f:
-                            data = frame_data.read()
-                            print(f"Read data type: {type(data)}")
-                            print(f"Read data length: {len(data)}")
-                            f.write(data)
-                            print("Successfully wrote frame data")
+                        for frame in task.frames():
+                            print(f"\nFrame info: {frame.frame_info}")
+                            print(f"Frame ID: {frame.id}")
+                            print(f"Frame attributes: {dir(frame)}")
+                            
+                            frame_path = task_path / frame.frame_info['name']
+                            print(f"Saving frame to: {frame_path}")
+                            
+                            try:
+                                frame_data = cvat_task.get_frame(frame.id)
+                                print(f"Frame data type: {type(frame_data)}")
+                                print(f"Frame data attributes: {dir(frame_data)}")
+                                
+                                with open(frame_path, "wb") as f:
+                                    data = frame_data.read()
+                                    print(f"Read data type: {type(data)}")
+                                    print(f"Read data length: {len(data)}")
+                                    f.write(data)
+                                    print("Successfully wrote frame data")
+                            except Exception as e:
+                                print(f"Error saving frame: {e}")
+                                import traceback
+                                traceback.print_exc()
                     except Exception as e:
-                        print(f"Error saving frame: {e}")
+                        print(f"Error getting frames for task {task.id}: {e}")
+
+                    # Save annotations
+                    print("\nSaving annotations")
+                    try:
+                        # Create a temporary file path but don't open it
+                        temp_file = tempfile.NamedTemporaryFile(suffix=".zip", delete=False)
+                        temp_file.close()
+                        try:
+                            annotations = cvat_task.export_dataset(
+                                format_name="CVAT for images 1.1",
+                                include_images=False,
+                                filename=temp_file.name,
+                            )
+                            with open(task_path / "annotations.json", "wb") as f:
+                                f.write(annotations.read())
+                            print("Successfully saved annotations")
+                        finally:
+                            # Clean up the temporary file
+                            Path(temp_file.name).unlink(missing_ok=True)
+                    except Exception as e:
+                        print(f"Error saving annotations: {e}")
                         import traceback
                         traceback.print_exc()
-
-                # Save annotations
-                print("\nSaving annotations")
-                try:
-                    annotations = cvat_task.export_dataset(
-                        format_name="CVAT for images 1.1",
-                        include_images=False,
-                    )
-                    with open(task_path / "annotations.json", "wb") as f:
-                        f.write(annotations.read())
-                    print("Successfully saved annotations")
                 except Exception as e:
-                    print(f"Error saving annotations: {e}")
+                    print(f"Error processing task {task.id}: {e}")
                     import traceback
                     traceback.print_exc()
 
