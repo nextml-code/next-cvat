@@ -1,17 +1,19 @@
 from __future__ import annotations
 
+import json
 import tempfile
 import zipfile
 from contextlib import contextmanager
 from functools import lru_cache
-from typing import TYPE_CHECKING, Generator
+from pathlib import Path
+from typing import TYPE_CHECKING, Generator, Union
 
 from cvat_sdk import Client as CVATClient
 from cvat_sdk.api_client import models
 from cvat_sdk.core.proxies.projects import Project as CVATProject
 from pydantic import BaseModel
 
-from ..types import JobStatus
+from ..types.job_status import JobStatus
 from .task import Task
 
 if TYPE_CHECKING:
@@ -27,58 +29,73 @@ class Project(BaseModel):
         with self.client.cvat_client() as client:
             yield client.projects.retrieve(self.id)
 
-    def download_(self, dataset_path) -> Project:
-        """
-        Download project dataset and job status information.
-        
-        Args:
-            dataset_path: Path where to save the dataset and job status
-            
-        Returns:
-            self for method chaining
-        """
-        import json
-        from pathlib import Path
+    def download_(self, dataset_path: Union[str, Path]) -> None:
+        """Download project data to a local directory."""
+        print(f"Downloading project {self.id} to dataset")
+        dataset_path = Path(dataset_path)
+        dataset_path.mkdir(exist_ok=True)
 
         with self.client.cvat_client() as cvat_client:
-            cvat_client: CVATClient
-
-            project = cvat_client.projects.retrieve(self.id)
-            dataset_path = Path(dataset_path)
-
-            print(f"Downloading project {self.id} to {dataset_path}")
-            
-            # Download dataset
-            with tempfile.TemporaryDirectory() as temp_dir:
-                temp_file_path = f"{temp_dir}/dataset.zip"
-                project.export_dataset(
-                    format_name="CVAT for images 1.1",
-                    filename=temp_file_path,
-                    include_images=True,
-                )
-
-                with zipfile.ZipFile(temp_file_path, "r") as zip_ref:
-                    zip_ref.extractall(dataset_path)
-            
-            # Get and save job status information
+            # Get job status for all tasks
             job_status = []
-            for task in project.get_tasks():
-                for job in task.get_jobs():
-                    job_status.append(JobStatus(
-                        task_id=str(task.id),
-                        job_id=job.id,
-                        task_name=task.name,
-                        stage=job.stage,  # e.g., annotation, validation
-                        state=job.state,  # e.g., completed, in_progress
-                        assignee=job.assignee,  # who is assigned to the job
-                    ))
-            
-            # Save job status to JSON file
-            status_file = dataset_path / "job_status.json"
-            status_file.write_text(json.dumps([js.model_dump() for js in job_status], indent=2))
-            print(f"Saved job status information to {status_file}")
+            for task in self.tasks():
+                cvat_task = cvat_client.tasks.retrieve(task.id)
+                task_name = cvat_task.name
+                for job in task.jobs():
+                    cvat_job = cvat_client.jobs.retrieve(job.id)
+                    job_status.append(JobStatus.from_job(cvat_job, task_name))
 
-        return self
+            # Save job status
+            with open(dataset_path / "job_status.json", "w") as f:
+                json.dump([status.model_dump() for status in job_status], f)
+
+            # Download annotations for each task
+            for task in self.tasks():
+                cvat_task = cvat_client.tasks.retrieve(task.id)
+                task_name = cvat_task.name
+                print(f"\nProcessing task: {task_name} (ID: {task.id})")
+                task_path = dataset_path / task_name
+                task_path.mkdir(exist_ok=True)
+
+                # Download frames
+                for frame in task.frames():
+                    print(f"\nFrame info: {frame.frame_info}")
+                    print(f"Frame ID: {frame.id}")
+                    print(f"Frame attributes: {dir(frame)}")
+                    
+                    frame_path = task_path / frame.frame_info['name']
+                    print(f"Saving frame to: {frame_path}")
+                    
+                    try:
+                        frame_data = cvat_task.get_frame(frame.id)
+                        print(f"Frame data type: {type(frame_data)}")
+                        print(f"Frame data attributes: {dir(frame_data)}")
+                        
+                        with open(frame_path, "wb") as f:
+                            data = frame_data.read()
+                            print(f"Read data type: {type(data)}")
+                            print(f"Read data length: {len(data)}")
+                            f.write(data)
+                            print("Successfully wrote frame data")
+                    except Exception as e:
+                        print(f"Error saving frame: {e}")
+                        import traceback
+                        traceback.print_exc()
+
+                # Save annotations
+                print("\nSaving annotations")
+                try:
+                    annotations = cvat_task.export_dataset(
+                        format_name="CVAT for images 1.1",
+                        include_images=False,
+                    )
+                    with open(task_path / "annotations.json", "wb") as f:
+                        f.write(annotations.read())
+                    print("Successfully saved annotations")
+                except Exception as e:
+                    print(f"Error saving annotations: {e}")
+                    import traceback
+                    traceback.print_exc()
 
     def create_task_(
         self,
