@@ -23,6 +23,7 @@ class Box(BaseModel):
         ybr: Y-coordinate of bottom-right corner
         occluded: Whether the object is occluded
         z_order: Drawing order (higher numbers are drawn on top)
+        source: Source of the annotation ('manual' or 'auto')
         attributes: List of additional attributes for this box
 
     Example:
@@ -60,6 +61,7 @@ class Box(BaseModel):
     ybr: float
     occluded: bool = False
     z_order: int = 0
+    source: str = "manual"
     attributes: List[Attribute] = []
 
     def polygon(self) -> Polygon:

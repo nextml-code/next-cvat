@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 import next_cvat
+from next_cvat import Annotations
 
 
 def test_download():
@@ -11,10 +12,10 @@ def test_download():
         pytest.skip("No .env.cvat.secrets file found")
 
     with tempfile.TemporaryDirectory() as temp_dir:
-        # Use test project ID
+        # Use test project ID with known annotations
         client = next_cvat.Client.from_env_file(".env.cvat.secrets")
         client.download_(
-            project_id=217969,  # Using test project
+            project_id=198488,  # Project with test annotations
             dataset_path=temp_dir,
         )
         
@@ -25,7 +26,18 @@ def test_download():
         assert job_status_path.exists(), "job_status.json should exist"
         
         # Check annotations
-        assert (temp_path / "annotations.xml").exists(), "annotations.xml missing"
+        annotations_path = temp_path / "annotations.xml"
+        assert annotations_path.exists(), "annotations.xml missing"
+        
+        # Load annotations and verify they can be parsed
+        annotations = Annotations.from_path(annotations_path)
+        
+        # Verify we can access required attributes without errors
+        for image in annotations.images:
+            for box in image.boxes:
+                # These should not raise AttributeError
+                assert hasattr(box, "source"), f"Box missing 'source' attribute"
+                assert box.source in ["manual", "auto"], f"Invalid source value: {box.source}"
         
         # Check images directory
         images_dir = temp_path / "images"
