@@ -10,6 +10,7 @@ from pydantic import BaseModel, field_validator
 
 class Task(BaseModel):
     task_id: str
+    name: str
     url: str
 
     def job_id(self) -> str:
