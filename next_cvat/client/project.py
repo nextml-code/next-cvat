@@ -95,21 +95,24 @@ class Project(BaseModel):
                     # Save annotations
                     print("\nSaving annotations")
                     try:
-                        # Create a temporary file path but don't open it
-                        temp_file = tempfile.NamedTemporaryFile(suffix=".zip", delete=False)
-                        temp_file.close()
+                        # Create a unique temporary file path without creating the file
+                        temp_file = Path(tempfile.mktemp(suffix=".zip"))
                         try:
-                            annotations = cvat_task.export_dataset(
+                            cvat_task.export_dataset(
                                 format_name="CVAT for images 1.1",
                                 include_images=False,
-                                filename=temp_file.name,
+                                filename=str(temp_file),
                             )
-                            with open(task_path / "annotations.json", "wb") as f:
-                                f.write(annotations.read())
-                            print("Successfully saved annotations")
+                            # Copy the exported file to the target location
+                            if temp_file.exists():
+                                with open(temp_file, "rb") as src, open(task_path / "annotations.json", "wb") as dst:
+                                    dst.write(src.read())
+                                print("Successfully saved annotations")
+                            else:
+                                print("No annotations were exported")
                         finally:
                             # Clean up the temporary file
-                            Path(temp_file.name).unlink(missing_ok=True)
+                            temp_file.unlink(missing_ok=True)
                     except Exception as e:
                         print(f"Error saving annotations: {e}")
                         import traceback
