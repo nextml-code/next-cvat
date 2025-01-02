@@ -9,6 +9,8 @@ from next_cvat.client.client import Client
 @pytest.fixture
 def client():
     """Return a CVAT client."""
+    if not Path(".env.cvat.secrets").exists():
+        pytest.skip("No .env.cvat.secrets file found")
     return Client.from_env_file(".env.cvat.secrets")
 
 @pytest.fixture

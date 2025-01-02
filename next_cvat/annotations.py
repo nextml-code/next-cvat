@@ -69,11 +69,12 @@ class Annotations(BaseModel):
 
         # Parse tasks
         tasks = []
-        for task in project.findall("tasks/task"):
+        for task in root.findall("meta/tasks/task"):
             task_id = task.find("id").text
+            name = task.find("name").text
             url_tag = task.find("segments/segment/url")
             if url_tag is not None:
-                task_instance = Task(task_id=task_id, url=url_tag.text)
+                task_instance = Task(task_id=task_id, name=name, url=url_tag.text)
                 tasks.append(task_instance)  # Store the task instance
 
         # Parse image annotations
@@ -284,31 +285,31 @@ class Annotations(BaseModel):
         return self
 
     def get_task_status(self, task_id: str) -> Dict[str, str]:
-        """Get the status of all jobs for a task."""
+        """Get the status of all jobs for a given task."""
         return {
-            str(job.job_id): job.state
-            for job in self.job_status
-            if job.task_id == task_id
+            str(status.job_id): status.state
+            for status in self.job_status
+            if status.task_id == task_id
         }
 
     def get_completed_tasks(self) -> List[Task]:
-        """Get all tasks where all jobs are completed."""
+        """Get all tasks that have all jobs completed."""
         completed_task_ids = self.get_completed_task_ids()
         return [task for task in self.tasks if task.task_id in completed_task_ids]
 
     def get_completed_task_ids(self) -> List[str]:
-        """Get IDs of tasks where all jobs are completed."""
-        task_jobs = {}
-        for job in self.job_status:
-            if job.task_id not in task_jobs:
-                task_jobs[job.task_id] = []
-            task_jobs[job.task_id].append(job)
+        """Get IDs of all tasks that have all jobs completed."""
+        task_statuses = {}
+        for status in self.job_status:
+            if status.task_id not in task_statuses:
+                task_statuses[status.task_id] = []
+            task_statuses[status.task_id].append(status.state)
 
-        completed_task_ids = []
-        for task_id, jobs in task_jobs.items():
-            if all(job.state == "completed" for job in jobs):
-                completed_task_ids.append(task_id)
-        return completed_task_ids
+        return [
+            task_id
+            for task_id, states in task_statuses.items()
+            if all(state == "completed" for state in states)
+        ]
 
     def get_images_from_completed_tasks(self) -> List[ImageAnnotation]:
         """Get all images from completed tasks."""

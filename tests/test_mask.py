@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import numpy as np
+import pytest
 from PIL import Image
 
 from next_cvat import Annotations
@@ -8,6 +9,10 @@ from next_cvat.types.mask import Mask
 
 
 def test_mask_annotations():
+    """Test reading mask annotations from XML file."""
+    if not Path(".env.cvat.secrets").exists():
+        pytest.skip("No .env.cvat.secrets file found")
+
     annotations_data = Annotations.from_path("tests/mask_annotations.xml")
     assert len(annotations_data.images) == 1
     assert len(annotations_data.images[0].masks) == 3

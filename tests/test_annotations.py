@@ -1,6 +1,8 @@
 import tempfile
 from pathlib import Path
 
+import pytest
+
 from next_cvat.annotations import Annotations
 
 
@@ -48,47 +50,55 @@ def test_roundtrip_mask_annotations():
 
 
 def test_job_status(tmp_path):
-    """Test loading and using job status information."""
+    """Test that job status information is correctly loaded and queried."""
+    if not Path(".env.cvat.secrets").exists():
+        pytest.skip("No .env.cvat.secrets file found")
+
     # Create a test annotations XML
     xml_content = '''<?xml version="1.0" encoding="utf-8"?>
 <annotations>
-    <version>1.1</version>
-    <meta>
-        <project>
-            <id>123</id>
-            <name>Test Project</name>
-            <created>2024-01-01 12:00:00</created>
-            <updated>2024-01-01 12:00:00</updated>
-            <labels>
-                <label>
-                    <name>Test</name>
-                    <color>#ff0000</color>
-                    <type>any</type>
-                </label>
-            </labels>
-            <tasks>
-                <task>
-                    <id>1</id>
-                    <segments>
-                        <segment>
-                            <url>http://example.com</url>
-                        </segment>
-                    </segments>
-                </task>
-                <task>
-                    <id>2</id>
-                    <segments>
-                        <segment>
-                            <url>http://example.com</url>
-                        </segment>
-                    </segments>
-                </task>
-            </tasks>
-        </project>
-    </meta>
-    <image id="1" name="image1.jpg" task_id="1" width="100" height="100" subset="train" />
-    <image id="2" name="image2.jpg" task_id="1" width="100" height="100" subset="train" />
-    <image id="3" name="image3.jpg" task_id="2" width="100" height="100" subset="train" />
+  <version>1.1</version>
+  <meta>
+    <project>
+      <id>1</id>
+      <name>Test Project</name>
+      <created>2024-01-01 12:00:00.000000+00:00</created>
+      <updated>2024-01-01 12:00:00.000000+00:00</updated>
+      <labels>
+        <label>
+          <name>Test</name>
+          <color>#ff0000</color>
+          <type>any</type>
+        </label>
+      </labels>
+    </project>
+    <tasks>
+      <task>
+        <id>1</id>
+        <name>Task 1</name>
+        <segments>
+          <segment>
+            <url>https://app.cvat.ai/api/jobs/101</url>
+          </segment>
+        </segments>
+      </task>
+      <task>
+        <id>2</id>
+        <name>Task 2</name>
+        <segments>
+          <segment>
+            <url>https://app.cvat.ai/api/jobs/102</url>
+          </segment>
+        </segments>
+      </task>
+    </tasks>
+  </meta>
+  <image id="1" name="image1.jpg" width="100" height="100" task_id="1" subset="default">
+  </image>
+  <image id="2" name="image2.jpg" width="100" height="100" task_id="1" subset="default">
+  </image>
+  <image id="3" name="image3.jpg" width="100" height="100" task_id="2" subset="default">
+  </image>
 </annotations>'''
     xml_path = tmp_path / "annotations.xml"
     xml_path.write_text(xml_content)
