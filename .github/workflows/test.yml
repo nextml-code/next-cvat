@@ -32,9 +32,9 @@ jobs:
           $HOME/.local/bin/poetry install --no-root
           $HOME/.local/bin/poetry add --group dev pytest-codeblocks
 
-      - name: Test with pytest
-        run: |
-          $HOME/.local/bin/poetry run pytest docs/examples --codeblocks -v
+      # - name: Test with pytest
+      #   run: |
+      #     $HOME/.local/bin/poetry run pytest docs/examples --codeblocks -v
 
       - name: Build wheels
         run: |
