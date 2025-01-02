@@ -121,3 +121,17 @@ client = Client.from_env_file(".env.cvat.secrets")
 with client.cvat_client() as cvat_client:
     cvat_client.get_tasks()
 ```
+
+## Development
+
+To build the docs:
+
+```bash
+poetry run mkdocs build
+```
+
+To serve the docs:
+
+```bash
+poetry run mkdocs serve
+```
