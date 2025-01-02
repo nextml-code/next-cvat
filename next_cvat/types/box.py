@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional
 
 import numpy as np
 from pydantic import BaseModel
@@ -10,15 +10,57 @@ from .polygon import Polygon
 
 
 class Box(BaseModel):
+    """A bounding box annotation in CVAT.
+
+    Represents a rectangular region in an image with a label and optional attributes.
+    Coordinates are specified in pixels from the top-left corner of the image.
+
+    Attributes:
+        label: Name of the label assigned to this box
+        xtl: X-coordinate of top-left corner
+        ytl: Y-coordinate of top-left corner
+        xbr: X-coordinate of bottom-right corner
+        ybr: Y-coordinate of bottom-right corner
+        occluded: Whether the object is occluded
+        z_order: Drawing order (higher numbers are drawn on top)
+        attributes: List of additional attributes for this box
+
+    Example:
+        ```python
+        # Simple box
+        box = Box(
+            label="car",
+            xtl=100,
+            ytl=200,
+            xbr=300,
+            ybr=400,
+            occluded=False,
+            z_order=1
+        )
+
+        # Box with attributes
+        box_with_attrs = Box(
+            label="car",
+            xtl=100,
+            ytl=200,
+            xbr=300,
+            ybr=400,
+            attributes=[
+                Attribute(name="color", value="red"),
+                Attribute(name="model", value="sedan")
+            ]
+        )
+        ```
+    """
+
     label: str
-    source: str
-    occluded: int
     xtl: float
     ytl: float
     xbr: float
     ybr: float
-    z_order: int
-    attributes: List[Attribute]
+    occluded: bool = False
+    z_order: int = 0
+    attributes: List[Attribute] = []
 
     def polygon(self) -> Polygon:
         points = [

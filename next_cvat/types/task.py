@@ -9,9 +9,29 @@ from pydantic import BaseModel, field_validator
 
 
 class Task(BaseModel):
+    """A CVAT task representing a unit of work for annotation.
+
+    Tasks are created within projects and contain images to be annotated.
+    Each task can be split into multiple jobs for parallel annotation.
+
+    Attributes:
+        task_id: Unique identifier for the task
+        name: Human-readable name of the task
+        url: Optional URL to access the task's data or API endpoint
+
+    Example:
+        ```python
+        task = Task(
+            task_id="906591",
+            name="Batch 1",
+            url="https://app.cvat.ai/api/jobs/520016"
+        )
+        ```
+    """
+
     task_id: str
     name: str
-    url: str
+    url: Optional[str] = None
 
     def job_id(self) -> str:
         """

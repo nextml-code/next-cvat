@@ -1,10 +1,39 @@
 from typing import Any, Dict, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class JobStatus(BaseModel):
-    """Status information for a job."""
+    """Status information for a CVAT job.
+
+    Jobs are subdivisions of tasks that can be assigned to different annotators.
+    Each job has a stage (e.g., "annotation") and state (e.g., "completed").
+
+    Attributes:
+        task_id: ID of the task this job belongs to
+        job_id: Unique identifier for the job
+        task_name: Name of the parent task
+        stage: Current stage of the job (e.g., "annotation", "validation")
+        state: Current state of the job (e.g., "completed", "in_progress")
+        assignee: Username or details of the person assigned to the job
+
+    Example:
+        ```python
+        # Create from job status data
+        status = JobStatus(
+            task_id="906591",
+            job_id=520016,
+            task_name="Batch 1",
+            stage="annotation",
+            state="completed",
+            assignee="john.doe"
+        )
+
+        # Create from CVAT SDK job object
+        status = JobStatus.from_job(job, task_name="Batch 1")
+        print(status.assignee_email)  # Get assignee's email
+        ```
+    """
 
     task_id: str
     job_id: int

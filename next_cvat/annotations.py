@@ -22,7 +22,34 @@ from .types import (
 
 
 class Annotations(BaseModel):
-    """CVAT annotations."""
+    """CVAT annotations for managing project, task, and image data.
+
+    This class provides functionality to:
+    - Load and save CVAT XML annotation files
+    - Track job status information
+    - Query task completion status
+    - Access image annotations
+
+    Examples:
+        Load annotations from XML file:
+        ```python
+        annotations = Annotations.from_path("annotations.xml")
+        ```
+
+        Load annotations with job status:
+        ```python
+        annotations = Annotations.from_path(
+            "annotations.xml",
+            "job_status.json"
+        )
+        ```
+
+        Get completed tasks and their images:
+        ```python
+        completed_tasks = annotations.get_completed_tasks()
+        completed_images = annotations.get_images_from_completed_tasks()
+        ```
+    """
 
     version: str
     project: Project
@@ -32,12 +59,26 @@ class Annotations(BaseModel):
 
     @classmethod
     def from_path(cls, xml_annotation_path: Union[str, Path], job_status_path: Optional[Union[str, Path]] = None) -> Annotations:
-        """
-        Load annotations from XML file and optionally include job status information.
+        """Load annotations from XML file and optionally include job status information.
 
         Args:
             xml_annotation_path: Path to the CVAT XML annotations file
             job_status_path: Optional path to the job status JSON file
+
+        Returns:
+            Annotations object containing the loaded data
+
+        Example:
+            ```python
+            # Load just annotations
+            annotations = Annotations.from_path("annotations.xml")
+
+            # Load annotations with job status
+            annotations = Annotations.from_path(
+                "annotations.xml",
+                "job_status.json"
+            )
+            ```
         """
         tree = ElementTree.parse(str(xml_annotation_path))
         root = tree.getroot()
@@ -69,13 +110,16 @@ class Annotations(BaseModel):
 
         # Parse tasks
         tasks = []
-        for task in root.findall("meta/project/tasks/task"):
-            task_id = task.find("id").text
-            name = task.find("name").text
-            url_tag = task.find("segments/segment/url")
-            if url_tag is not None:
-                task_instance = Task(task_id=task_id, name=name, url=url_tag.text)
-                tasks.append(task_instance)  # Store the task instance
+        # Try both possible locations for tasks
+        task_locations = ["meta/tasks/task", "meta/project/tasks/task"]
+        for location in task_locations:
+            for task in root.findall(location):
+                task_id = task.find("id").text
+                name = task.find("name").text
+                url_tag = task.find("segments/segment/url")
+                if url_tag is not None:
+                    task_instance = Task(task_id=task_id, name=name, url=url_tag.text)
+                    tasks.append(task_instance)  # Store the task instance
 
         # Parse image annotations
         images = []
@@ -200,7 +244,7 @@ class Annotations(BaseModel):
 
         # Add tasks
         if self.tasks:
-            tasks_elem = ElementTree.SubElement(project, "tasks")
+            tasks_elem = ElementTree.SubElement(meta, "tasks")
             for task in self.tasks:
                 task_elem = ElementTree.SubElement(tasks_elem, "task")
                 task_id = ElementTree.SubElement(task_elem, "id")
@@ -287,7 +331,20 @@ class Annotations(BaseModel):
         return self
 
     def get_task_status(self, task_id: str) -> Dict[str, str]:
-        """Get the status of all jobs for a given task."""
+        """Get the status of all jobs for a given task.
+
+        Args:
+            task_id: ID of the task to get status for
+
+        Returns:
+            Dictionary mapping job IDs to their states
+
+        Example:
+            ```python
+            task_status = annotations.get_task_status("1234")
+            # Returns: {"5678": "completed", "5679": "in_progress"}
+            ```
+        """
         return {
             str(status.job_id): status.state
             for status in self.job_status
@@ -295,12 +352,37 @@ class Annotations(BaseModel):
         }
 
     def get_completed_tasks(self) -> List[Task]:
-        """Get all tasks that have all jobs completed."""
+        """Get all tasks that have all jobs completed.
+
+        A task is considered completed when all of its jobs are in the "completed" state.
+
+        Returns:
+            List of Task objects that are fully completed
+
+        Example:
+            ```python
+            completed_tasks = annotations.get_completed_tasks()
+            for task in completed_tasks:
+                print(f"Task {task.task_id}: {task.name}")
+            ```
+        """
         completed_task_ids = self.get_completed_task_ids()
         return [task for task in self.tasks if task.task_id in completed_task_ids]
 
     def get_completed_task_ids(self) -> List[str]:
-        """Get IDs of all tasks that have all jobs completed."""
+        """Get IDs of all tasks that have all jobs completed.
+
+        A task is considered completed when all of its jobs are in the "completed" state.
+
+        Returns:
+            List of task IDs that are fully completed
+
+        Example:
+            ```python
+            completed_ids = annotations.get_completed_task_ids()
+            # Returns: ["1234", "5678"]
+            ```
+        """
         task_statuses = {}
         for status in self.job_status:
             if status.task_id not in task_statuses:
@@ -314,7 +396,18 @@ class Annotations(BaseModel):
         ]
 
     def get_images_from_completed_tasks(self) -> List[ImageAnnotation]:
-        """Get all images from completed tasks."""
+        """Get all images from completed tasks.
+
+        Returns:
+            List of ImageAnnotation objects from completed tasks
+
+        Example:
+            ```python
+            completed_images = annotations.get_images_from_completed_tasks()
+            for image in completed_images:
+                print(f"Image {image.name} from task {image.task_id}")
+            ```
+        """
         completed_task_ids = self.get_completed_task_ids()
         return [
             image
@@ -323,14 +416,22 @@ class Annotations(BaseModel):
         ]
 
     def create_cvat_link(self, image_name: str) -> str:
-        """
-        Create a CVAT link for the given image name.
+        """Create a CVAT link for the given image name.
 
         Args:
-            image_name: Name of the image.
-            
+            image_name: Name of the image
+
         Returns:
-            A CVAT link. E.g. https://app.cvat.ai/tasks/453747/jobs/520016
+            A CVAT link in the format: https://app.cvat.ai/tasks/{task_id}/jobs/{job_id}
+
+        Raises:
+            ValueError: If the image or its associated job is not found
+
+        Example:
+            ```python
+            link = annotations.create_cvat_link("image1.jpg")
+            # Returns: "https://app.cvat.ai/tasks/453747/jobs/520016"
+            ```
         """
         images = list(sorted(self.images, key=lambda image: image.name))
         
