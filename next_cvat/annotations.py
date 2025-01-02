@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
-from typing import List, Union
+from typing import Dict, List, Optional, Union
 from xml.etree import ElementTree
 
 from pydantic import BaseModel
@@ -10,6 +11,7 @@ from .types import (
     Attribute,
     Box,
     ImageAnnotation,
+    JobStatus,
     Label,
     Mask,
     Polygon,
@@ -20,13 +22,23 @@ from .types import (
 
 
 class Annotations(BaseModel):
+    """CVAT annotations."""
+
     version: str
     project: Project
     tasks: List[Task]
     images: List[ImageAnnotation]
+    job_status: List[JobStatus] = []
 
     @classmethod
-    def from_path(cls, xml_annotation_path: Union[str, Path]) -> Annotations:
+    def from_path(cls, xml_annotation_path: Union[str, Path], job_status_path: Optional[Union[str, Path]] = None) -> Annotations:
+        """
+        Load annotations from XML file and optionally include job status information.
+
+        Args:
+            xml_annotation_path: Path to the CVAT XML annotations file
+            job_status_path: Optional path to the job status JSON file
+        """
         tree = ElementTree.parse(str(xml_annotation_path))
         root = tree.getroot()
 
@@ -118,50 +130,20 @@ class Annotations(BaseModel):
                 )
             )
 
+        # Load job status if provided
+        job_status = []
+        if job_status_path:
+            with open(job_status_path) as f:
+                job_status_data = json.load(f)
+                job_status = [JobStatus(**status) for status in job_status_data]
+
         return cls(
             version=root.find("version").text,
             project=project_data,
-            images=images,
             tasks=tasks,
+            images=images,
+            job_status=job_status,
         )
-
-    def create_cvat_link(self, image_name: str) -> str:
-        """
-        Create a CVAT link for the given image name.
-
-        :param image_name: Name of the image.
-        :return: A CVAT link. E.g. https://app.cvat.ai/tasks/453747/jobs/520016
-        """
-        images = list(sorted(self.images, key=lambda image: image.name))
-
-        # lookup task id for the given image name
-        task_id = None
-        for image in images:
-            if Path(image.name).name == image_name:
-                task_id = image.task_id
-                image_id = image.id
-                break
-        if task_id is None:
-            raise ValueError(f"Could not find task ID for image: {image_name}")
-
-        frame_index = 0
-        for image in images:
-            if image.task_id == task_id:
-                if Path(image.name).name == image_name:
-                    break
-
-                frame_index += 1
-
-        # lookup job id for the given task id
-        job_id = None
-        for task in self.tasks:
-            if task.task_id == task_id:
-                job_id = task.job_id()
-                break
-        if job_id is None:
-            raise ValueError(f"Could not find job ID for task ID: {task_id}")
-
-        return f"https://app.cvat.ai/tasks/{task_id}/jobs/{job_id}?frame={frame_index}"
 
     def save_xml_(self, path: Union[str, Path]) -> Annotations:
         """
@@ -300,3 +282,73 @@ class Annotations(BaseModel):
         tree.write(str(path), encoding="utf-8", xml_declaration=True)
 
         return self
+
+    def get_task_status(self, task_id: str) -> Dict[str, str]:
+        """Get the status of all jobs for a task."""
+        return {
+            str(job.job_id): job.state
+            for job in self.job_status
+            if job.task_id == task_id
+        }
+
+    def get_completed_tasks(self) -> List[Task]:
+        """Get all tasks where all jobs are completed."""
+        completed_task_ids = self.get_completed_task_ids()
+        return [task for task in self.tasks if task.task_id in completed_task_ids]
+
+    def get_completed_task_ids(self) -> List[str]:
+        """Get IDs of tasks where all jobs are completed."""
+        task_jobs = {}
+        for job in self.job_status:
+            if job.task_id not in task_jobs:
+                task_jobs[job.task_id] = []
+            task_jobs[job.task_id].append(job)
+
+        completed_task_ids = []
+        for task_id, jobs in task_jobs.items():
+            if all(job.state == "completed" for job in jobs):
+                completed_task_ids.append(task_id)
+        return completed_task_ids
+
+    def get_images_from_completed_tasks(self) -> List[ImageAnnotation]:
+        """Get all images from completed tasks."""
+        completed_task_ids = self.get_completed_task_ids()
+        return [
+            image
+            for image in self.images
+            if image.task_id in completed_task_ids
+        ]
+
+    def create_cvat_link(self, image_name: str) -> str:
+        """
+        Create a CVAT link for the given image name.
+
+        Args:
+            image_name: Name of the image.
+            
+        Returns:
+            A CVAT link. E.g. https://app.cvat.ai/tasks/453747/jobs/520016
+        """
+        images = list(sorted(self.images, key=lambda image: image.name))
+        
+        # lookup task id for the given image name
+        task_id = None
+        for image in images:
+            if image.name == image_name:
+                task_id = image.task_id
+                break
+                
+        if task_id is None:
+            raise ValueError(f"Image {image_name} not found")
+            
+        # lookup job id for the task
+        job_id = None
+        for job in self.job_status:
+            if job.task_id == task_id:
+                job_id = job.job_id
+                break
+                
+        if job_id is None:
+            raise ValueError(f"No job found for task {task_id}")
+            
+        return f"https://app.cvat.ai/tasks/{task_id}/jobs/{job_id}"

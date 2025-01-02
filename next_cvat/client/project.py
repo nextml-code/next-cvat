@@ -11,6 +11,7 @@ from cvat_sdk.api_client import models
 from cvat_sdk.core.proxies.projects import Project as CVATProject
 from pydantic import BaseModel
 
+from ..types import JobStatus
 from .task import Task
 
 if TYPE_CHECKING:
@@ -27,12 +28,27 @@ class Project(BaseModel):
             yield client.projects.retrieve(self.id)
 
     def download_(self, dataset_path) -> Project:
+        """
+        Download project dataset and job status information.
+        
+        Args:
+            dataset_path: Path where to save the dataset and job status
+            
+        Returns:
+            self for method chaining
+        """
+        import json
+        from pathlib import Path
+
         with self.client.cvat_client() as cvat_client:
             cvat_client: CVATClient
 
             project = cvat_client.projects.retrieve(self.id)
+            dataset_path = Path(dataset_path)
 
             print(f"Downloading project {self.id} to {dataset_path}")
+            
+            # Download dataset
             with tempfile.TemporaryDirectory() as temp_dir:
                 temp_file_path = f"{temp_dir}/dataset.zip"
                 project.export_dataset(
@@ -43,6 +59,24 @@ class Project(BaseModel):
 
                 with zipfile.ZipFile(temp_file_path, "r") as zip_ref:
                     zip_ref.extractall(dataset_path)
+            
+            # Get and save job status information
+            job_status = []
+            for task in project.get_tasks():
+                for job in task.get_jobs():
+                    job_status.append(JobStatus(
+                        task_id=str(task.id),
+                        job_id=job.id,
+                        task_name=task.name,
+                        stage=job.stage,  # e.g., annotation, validation
+                        state=job.state,  # e.g., completed, in_progress
+                        assignee=job.assignee,  # who is assigned to the job
+                    ))
+            
+            # Save job status to JSON file
+            status_file = dataset_path / "job_status.json"
+            status_file.write_text(json.dumps([js.model_dump() for js in job_status], indent=2))
+            print(f"Saved job status information to {status_file}")
 
         return self
 
