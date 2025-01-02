@@ -69,7 +69,7 @@ class Annotations(BaseModel):
 
         # Parse tasks
         tasks = []
-        for task in root.findall("meta/tasks/task"):
+        for task in root.findall("meta/project/tasks/task"):
             task_id = task.find("id").text
             name = task.find("name").text
             url_tag = task.find("segments/segment/url")
@@ -205,6 +205,8 @@ class Annotations(BaseModel):
                 task_elem = ElementTree.SubElement(tasks_elem, "task")
                 task_id = ElementTree.SubElement(task_elem, "id")
                 task_id.text = task.task_id
+                task_name = ElementTree.SubElement(task_elem, "name")
+                task_name.text = task.name
 
                 segments = ElementTree.SubElement(task_elem, "segments")
                 segment = ElementTree.SubElement(segments, "segment")
@@ -308,7 +310,7 @@ class Annotations(BaseModel):
         return [
             task_id
             for task_id, states in task_statuses.items()
-            if all(state == "completed" for state in states)
+            if len(states) > 0 and all(state == "completed" for state in states)
         ]
 
     def get_images_from_completed_tasks(self) -> List[ImageAnnotation]:
