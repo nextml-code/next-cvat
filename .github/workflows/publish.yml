@@ -47,9 +47,10 @@ jobs:
         run: |
           poetry version $(git tag --points-at HEAD)
           poetry build --format=wheel
-      - name: Upload to nextml packagr
+
+      - name: Upload
         env:
           USERNAME: __token__
-          PASSWORD: ${{ secrets.PACKAGR_TOKEN }}
+          PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
-          poetry publish -r nextml --username=$USERNAME --password=$PASSWORD
+          poetry publish --username=$USERNAME --password=$PASSWORD

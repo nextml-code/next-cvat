@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "next-cvat"
 version = "0.0.0"
-description = "Helper to work with cvat annotations"
+description = "Minimalistic python SDK for CVAT"
 authors = ["nextml"]
 readme = "README.md"
 
@@ -26,11 +26,6 @@ black = "^22.3.0"
 pytest = "^6.1.2"
 autoflake = "^1.6.1"
 pydantic-settings ="^2.5.2"
-
-[[tool.poetry.source]]
-name = "nextml"
-url = "https://api.packagr.app/882TAwUpj/"
-priority="explicit"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.7.1"
