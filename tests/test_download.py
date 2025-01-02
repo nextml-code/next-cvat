@@ -32,12 +32,13 @@ def test_download():
         # Load annotations and verify they can be parsed
         annotations = Annotations.from_path(annotations_path)
         
-        # Verify we can access required attributes without errors
+        # Try to convert boxes to segmentations - this should reproduce the error
         for image in annotations.images:
+            print(f"Processing image: {image.name}")
             for box in image.boxes:
-                # These should not raise AttributeError
-                assert hasattr(box, "source"), f"Box missing 'source' attribute"
-                assert box.source in ["manual", "auto"], f"Invalid source value: {box.source}"
+                print(f"Converting box: {box.label}")
+                # This should raise AttributeError: 'Box' object has no attribute 'source'
+                mask = box.segmentation(height=2000, width=2000)  # Using example dimensions
         
         # Check images directory
         images_dir = temp_path / "images"

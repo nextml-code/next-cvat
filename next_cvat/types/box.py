@@ -61,7 +61,7 @@ class Box(BaseModel):
     ybr: float
     occluded: bool = False
     z_order: int = 0
-    source: str = "manual"
+    source: str = "manual"  # Default to manual annotations
     attributes: List[Attribute] = []
 
     def polygon(self) -> Polygon:
