@@ -4,7 +4,7 @@ Minimalistic python SDK for CVAT.
 
 Downloads and decodes annotations on the format "CVAT for images 1.1".
 
-📚 [Read the documentation](https://nextml.github.io/next-cvat)
+📚 [Read the documentation](https://nextml-code.github.io/next-cvat)
 
 ## Usage
 
