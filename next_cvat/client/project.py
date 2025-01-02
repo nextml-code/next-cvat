@@ -30,97 +30,49 @@ class Project(BaseModel):
             yield client.projects.retrieve(self.id)
 
     def download_(self, dataset_path: Union[str, Path]) -> None:
-        """Download project data to a local directory."""
-        print(f"Downloading project {self.id} to dataset")
+        """Download project data to the specified path.
+        
+        Args:
+            dataset_path: Path where to save the project data. Will create:
+                - job_status.json: Status of all jobs in the project
+                - {task_name}/annotations.xml: Task-specific annotations if available
+        """
         dataset_path = Path(dataset_path)
-        dataset_path.mkdir(exist_ok=True)
+        dataset_path.mkdir(parents=True, exist_ok=True)
 
-        with self.client.cvat_client() as cvat_client:
-            # Get job status for all tasks
-            job_status = []
-            for task in self.tasks():
+        print(f"Downloading project {self.id} to {dataset_path}")
+
+        # Get job status for all tasks
+        job_status = []
+        with self.cvat() as cvat_project:
+            for cvat_task in cvat_project.get_tasks():
+                task_name = cvat_task.name
+                task_id = cvat_task.id
+                print(f"Processing task: {task_name} (ID: {task_id})")
+
+                # Get job status first - this is critical
+                for job in cvat_task.get_jobs():
+                    job_status.append(JobStatus.from_job(job, task_name))
+
+                # Create task directory
+                task_dir = dataset_path / task_name
+                task_dir.mkdir(exist_ok=True)
+
+                # Try to export dataset if task has data
                 try:
-                    cvat_task = cvat_client.tasks.retrieve(task.id)
-                    task_name = cvat_task.name
-                    for job in task.jobs():
-                        try:
-                            cvat_job = cvat_client.jobs.retrieve(job.id)
-                            job_status.append(JobStatus.from_job(cvat_job, task_name))
-                        except Exception as e:
-                            print(f"Error getting job status for job {job.id}: {e}")
+                    print("Saving annotations")
+                    cvat_task.export_dataset(
+                        format_name="CVAT for images 1.1",
+                        filename=task_dir / "annotations.xml",
+                        include_images=False,
+                    )
                 except Exception as e:
-                    print(f"Error getting task {task.id}: {e}")
+                    print(f"Failed to export task {task_id}: {str(e)}")
+                    # Continue since we at least have job status
 
-            # Save job status
-            with open(dataset_path / "job_status.json", "w") as f:
-                json.dump([status.model_dump() for status in job_status], f)
-
-            # Download annotations for each task
-            for task in self.tasks():
-                try:
-                    cvat_task = cvat_client.tasks.retrieve(task.id)
-                    task_name = cvat_task.name
-                    print(f"\nProcessing task: {task_name} (ID: {task.id})")
-                    task_path = dataset_path / task_name
-                    task_path.mkdir(exist_ok=True)
-
-                    # Download frames
-                    try:
-                        for frame in task.frames():
-                            print(f"\nFrame info: {frame.frame_info}")
-                            print(f"Frame ID: {frame.id}")
-                            print(f"Frame attributes: {dir(frame)}")
-                            
-                            frame_path = task_path / frame.frame_info['name']
-                            print(f"Saving frame to: {frame_path}")
-                            
-                            try:
-                                frame_data = cvat_task.get_frame(frame.id)
-                                print(f"Frame data type: {type(frame_data)}")
-                                print(f"Frame data attributes: {dir(frame_data)}")
-                                
-                                with open(frame_path, "wb") as f:
-                                    data = frame_data.read()
-                                    print(f"Read data type: {type(data)}")
-                                    print(f"Read data length: {len(data)}")
-                                    f.write(data)
-                                    print("Successfully wrote frame data")
-                            except Exception as e:
-                                print(f"Error saving frame: {e}")
-                                import traceback
-                                traceback.print_exc()
-                    except Exception as e:
-                        print(f"Error getting frames for task {task.id}: {e}")
-
-                    # Save annotations
-                    print("\nSaving annotations")
-                    try:
-                        # Create a unique temporary file path without creating the file
-                        temp_file = Path(tempfile.mktemp(suffix=".zip"))
-                        try:
-                            cvat_task.export_dataset(
-                                format_name="CVAT for images 1.1",
-                                include_images=False,
-                                filename=str(temp_file),
-                            )
-                            # Copy the exported file to the target location
-                            if temp_file.exists():
-                                with open(temp_file, "rb") as src, open(task_path / "annotations.json", "wb") as dst:
-                                    dst.write(src.read())
-                                print("Successfully saved annotations")
-                            else:
-                                print("No annotations were exported")
-                        finally:
-                            # Clean up the temporary file
-                            temp_file.unlink(missing_ok=True)
-                    except Exception as e:
-                        print(f"Error saving annotations: {e}")
-                        import traceback
-                        traceback.print_exc()
-                except Exception as e:
-                    print(f"Error processing task {task.id}: {e}")
-                    import traceback
-                    traceback.print_exc()
+        # Save job status
+        with open(dataset_path / "job_status.json", "w") as f:
+            json.dump([status.model_dump() for status in job_status], f)
 
     def create_task_(
         self,

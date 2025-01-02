@@ -6,7 +6,7 @@ This guide shows you how to use next-cvat for common tasks.
 
 Create a `.env.cvat.secrets` file with your CVAT credentials:
 
-```bash
+```bash skip
 CVAT_HOST=https://app.cvat.ai
 CVAT_USERNAME=your_username
 CVAT_PASSWORD=your_password
@@ -16,7 +16,7 @@ CVAT_PASSWORD=your_password
 
 Here's a complete example showing the main features:
 
-```python
+```python skip
 from next_cvat import Client
 from pathlib import Path
 
@@ -33,9 +33,9 @@ task = project.create_task_(
 )
 
 try:
-    # Upload images
+    # Upload images (replace with your actual image paths)
     task.upload_images_(
-        image_paths=["image1.jpg", "image2.jpg"],
+        image_paths=["path/to/image1.jpg", "path/to/image2.jpg"],
         image_quality=70
     )
 
@@ -74,7 +74,7 @@ finally:
 
 ## Working with Projects
 
-```python
+```python skip
 # Get project metadata
 project = client.project(217969)
 with project.cvat() as cvat_project:
@@ -89,7 +89,7 @@ for task in tasks:
 
 ## Working with Tasks
 
-```python
+```python skip
 # Get a specific task
 task = client.task(906591)
 
@@ -103,7 +103,7 @@ task.delete_frame_(0)  # Delete first frame
 
 ## Working with Jobs
 
-```python
+```python skip
 # Get a specific job
 job = client.job(520016)
 
@@ -115,4 +115,4 @@ annotations = job.annotations()
 print(f"Number of shapes: {len(annotations.annotations['shapes'])}")
 ```
 
-Each code block in this documentation is automatically tested to ensure it works correctly.
+Note: The code examples above are for illustration purposes. Replace the IDs and file paths with your actual values.
