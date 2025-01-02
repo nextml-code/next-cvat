@@ -29,50 +29,45 @@ class Project(BaseModel):
         with self.client.cvat_client() as client:
             yield client.projects.retrieve(self.id)
 
-    def download_(self, dataset_path: Union[str, Path]) -> None:
+    def download_(self, dataset_path: Union[str, Path]) -> Project:
         """Download project data to the specified path.
         
         Args:
             dataset_path: Path where to save the project data. Will create:
-                - job_status.json: Status of all jobs in the project
-                - {task_name}/annotations.xml: Task-specific annotations if available
+                - annotations.xml: Project annotations
+                - images/: Directory containing all images
         """
         dataset_path = Path(dataset_path)
         dataset_path.mkdir(parents=True, exist_ok=True)
 
         print(f"Downloading project {self.id} to {dataset_path}")
-
-        # Get job status for all tasks
-        job_status = []
+        
         with self.cvat() as cvat_project:
+            # Download dataset (includes both annotations and images)
+            with tempfile.TemporaryDirectory() as temp_dir:
+                temp_file_path = Path(temp_dir) / "dataset.zip"
+                cvat_project.export_dataset(
+                    format_name="CVAT for images 1.1",
+                    filename=temp_file_path,
+                    include_images=True,
+                )
+
+                # Extract contents
+                with zipfile.ZipFile(temp_file_path, "r") as zip_ref:
+                    zip_ref.extractall(dataset_path)
+
+            # Get job status for all tasks
+            job_status = []
             for cvat_task in cvat_project.get_tasks():
                 task_name = cvat_task.name
-                task_id = cvat_task.id
-                print(f"Processing task: {task_name} (ID: {task_id})")
-
-                # Get job status first - this is critical
                 for job in cvat_task.get_jobs():
                     job_status.append(JobStatus.from_job(job, task_name))
 
-                # Create task directory
-                task_dir = dataset_path / task_name
-                task_dir.mkdir(exist_ok=True)
+            # Save job status
+            with open(dataset_path / "job_status.json", "w") as f:
+                json.dump([status.model_dump() for status in job_status], f)
 
-                # Try to export dataset if task has data
-                try:
-                    print("Saving annotations")
-                    cvat_task.export_dataset(
-                        format_name="CVAT for images 1.1",
-                        filename=task_dir / "annotations.xml",
-                        include_images=False,
-                    )
-                except Exception as e:
-                    print(f"Failed to export task {task_id}: {str(e)}")
-                    # Continue since we at least have job status
-
-        # Save job status
-        with open(dataset_path / "job_status.json", "w") as f:
-            json.dump([status.model_dump() for status in job_status], f)
+        return self
 
     def create_task_(
         self,
