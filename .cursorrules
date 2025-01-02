@@ -6,3 +6,7 @@
 - Commands need to be run using `poetry run <command>`
 - Use simple tests with a bit of logging that we can run with `poetry run pytest -s` to check that the code works as expected
 - Only run tests against project ids 217969 or 198488 which are test projects
+- The documentation for CVAT often sparse and it helps to look at the source code:
+  - .venv/lib/python3.9/site-packages/cvat_sdk/core/proxies/projects.py
+  - .venv/lib/python3.9/site-packages/cvat_sdk/core/proxies/tasks.py
+  - .venv/lib/python3.9/site-packages/cvat_sdk/core/proxies/jobs.py

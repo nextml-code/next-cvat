@@ -97,6 +97,18 @@ annotations.add_mask_(
 job.update_annotations_(annotations)
 ```
 
+### Delete frames
+
+Delete a frame from a task:
+
+```python
+# Get a frame by its index (0-based) or by name
+frame = task.frame(frame_id=0)  # or task.frame(name="image1.jpg")
+
+# Delete the frame
+task.delete_frame_(frame.id)
+```
+
 ### Low-level API
 
 ```python
