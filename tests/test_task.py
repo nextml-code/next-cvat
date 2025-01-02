@@ -17,30 +17,36 @@ def create_test_image():
 def test_delete_frame(cvat_client, tmp_path):
     # Get a test project
     project = cvat_client.project(217969)
+
+    try:
+        # Create a new task
+        task = project.create_task_("test_delete_frame")
     
-    # Create a new task
-    task = project.create_task_("test_delete_frame")
+        # Create and save a temporary test image
+        test_image = tmp_path / "test_image.jpg"
+        img_data = create_test_image()
+        test_image.write_bytes(img_data.getvalue())
     
-    # Create and save a temporary test image
-    test_image = tmp_path / "test_image.jpg"
-    img_data = create_test_image()
-    test_image.write_bytes(img_data.getvalue())
+        # Upload the test image
+        task.upload_images_(test_image)
     
-    # Upload the test image
-    task.upload_images_(test_image)
+        # Get the frame ID
+        frames = task.frames()
+        assert len(frames) == 1
+        frame_id = frames[0].id
     
-    # Get the frame ID
-    frames = task.frames()
-    assert len(frames) == 1
-    frame_id = frames[0].id
+        # Delete the frame
+        task.delete_frame_(frame_id)
     
-    # Delete the frame
-    task.delete_frame_(frame_id)
-    
-    # Verify frame was deleted
-    frames = task.frames()
-    assert len(frames) == 0
-    
-    # Test deleting non-existent frame
-    with pytest.raises(ValueError, match="Frame with ID .* not found"):
-        task.delete_frame_(999999) 
+        # Verify frame was deleted
+        frames = task.frames()
+        assert len(frames) == 0
+
+        # Test deleting non-existent frame
+        with pytest.raises(ValueError, match="Frame with ID .* not found"):
+            task.delete_frame_(999999)
+
+    finally:
+        # Clean up - delete the task
+        project.delete_task_(task.id)
+        print(f"Cleaned up task {task.id}") 

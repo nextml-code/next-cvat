@@ -123,4 +123,4 @@ class Project(BaseModel):
             task_id: ID of the task to delete
         """
         with self.client.cvat_client() as client:
-            client.tasks.api.destroy(task_id)
+            client.tasks.remove_by_ids([task_id])
