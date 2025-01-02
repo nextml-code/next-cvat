@@ -1,5 +1,17 @@
-def test_download_includes_job_status(cvat_client, tmp_path):
+from pathlib import Path
+
+import pytest
+
+from next_cvat import Client
+
+
+def test_download_includes_job_status(tmp_path):
     """Test that project download includes job status information."""
+    if not Path(".env.cvat.secrets").exists():
+        pytest.skip("No .env.cvat.secrets file found")
+
+    cvat_client = Client.from_env_file(".env.cvat.secrets")
+
     # Get a test project
     project = cvat_client.project(217969)
     
