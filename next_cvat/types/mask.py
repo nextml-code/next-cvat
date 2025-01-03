@@ -11,6 +11,23 @@ from .attribute import Attribute
 
 
 class Mask(BaseModel):
+    """A binary mask annotation in CVAT.
+    
+    Masks are used to store pixel-wise segmentations efficiently using run-length encoding (RLE).
+    They can be created from numpy arrays or PIL Images and support various operations.
+    
+    Attributes:
+        label: The label/class name for this mask
+        source: The source of this annotation (e.g. "manual", "automatic")
+        occluded: Whether this mask is occluded (0 for no, 1 for yes)
+        z_order: The z-order/layer of this mask
+        rle: Run-length encoded string representing the mask
+        top: Top coordinate of the mask's bounding box
+        left: Left coordinate of the mask's bounding box
+        height: Height of the mask's bounding box
+        width: Width of the mask's bounding box
+        attributes: List of additional attributes for this mask
+    """
     label: str
     source: str
     occluded: int
@@ -32,6 +49,22 @@ class Mask(BaseModel):
         z_order: int = 0,
         attributes: List[Attribute] = [],
     ) -> Mask:
+        """Create a Mask from a segmentation array or image.
+        
+        Args:
+            segmentation: Boolean numpy array or PIL Image to convert to mask
+            label: The label/class name for this mask
+            source: The source of this annotation (default: "next-cvat")
+            occluded: Whether this mask is occluded (default: 0)
+            z_order: The z-order/layer of this mask (default: 0)
+            attributes: List of additional attributes (default: [])
+            
+        Returns:
+            A new Mask instance
+            
+        Raises:
+            ValueError: If the segmentation is empty (all False)
+        """
         if isinstance(segmentation, Image.Image):
             segmentation = np.array(segmentation)
 
@@ -73,12 +106,14 @@ class Mask(BaseModel):
         )
 
     def segmentation(self, height: int, width: int) -> np.ndarray:
-        """
-        Create a boolean segmentation mask for the polygon.
-
-        :param height: Height of the output mask.
-        :param width: Width of the output mask.
-        :return: A numpy 2D array of booleans.
+        """Create a boolean segmentation mask.
+        
+        Args:
+            height: Height of the output mask
+            width: Width of the output mask
+            
+        Returns:
+            A numpy 2D array of booleans where True indicates the mask
         """
         small_mask = self.rle_decode()
         mask = np.zeros((height, width), dtype=bool)
@@ -88,7 +123,14 @@ class Mask(BaseModel):
         return mask
 
     def rle_decode_slow(self) -> np.ndarray:
-        """Original slower but verified implementation."""
+        """Original slower but verified RLE decoding implementation.
+        
+        This method is kept for reference and verification purposes.
+        For normal use, use rle_decode() instead.
+        
+        Returns:
+            A numpy 2D array of booleans representing the decoded mask
+        """
         s = self.rle.split(",")
         mask = np.empty((self.height * self.width), dtype=bool)
         index = 0
@@ -102,7 +144,17 @@ class Mask(BaseModel):
 
     @classmethod
     def rle_encode_slow(cls, mask: np.ndarray) -> str:
-        """Original slower but verified implementation."""
+        """Original slower but verified RLE encoding implementation.
+        
+        This method is kept for reference and verification purposes.
+        For normal use, use rle_encode() instead.
+        
+        Args:
+            mask: Boolean numpy array to encode
+            
+        Returns:
+            RLE-encoded string representation of the mask
+        """
         flat_mask = mask.flatten(order="C")
         counts = []
         prev_pixel = flat_mask[0]
@@ -123,7 +175,13 @@ class Mask(BaseModel):
         return ",".join(map(str, counts))
 
     def rle_decode(self) -> np.ndarray:
-        """Optimized RLE decoding."""
+        """Optimized RLE decoding implementation.
+        
+        This is the preferred method for decoding RLE masks.
+        
+        Returns:
+            A numpy 2D array of booleans representing the decoded mask
+        """
         counts = np.array([int(x) for x in self.rle.split(",")])
         total_pixels = self.height * self.width
         
@@ -143,7 +201,16 @@ class Mask(BaseModel):
 
     @classmethod
     def rle_encode(cls, mask: np.ndarray) -> str:
-        """Optimized RLE encoding."""
+        """Optimized RLE encoding implementation.
+        
+        This is the preferred method for encoding RLE masks.
+        
+        Args:
+            mask: Boolean numpy array to encode
+            
+        Returns:
+            RLE-encoded string representation of the mask
+        """
         flat_mask = mask.ravel()  # faster than flatten()
         if len(flat_mask) == 0:
             return "0"
@@ -167,13 +234,12 @@ class Mask(BaseModel):
         label_id: int,
         group: int = 0,
     ) -> models.LabeledShapeRequest:
-        """
-        Convert the mask to a CVAT shape format.
+        """Convert the mask to a CVAT shape format.
 
         Args:
             frame: The frame number this mask appears in
             label_id: The ID of the label this mask is associated with
-            group: The group ID for this shape
+            group: The group ID for this shape (default: 0)
 
         Returns:
             LabeledShapeRequest object for CVAT API
@@ -214,8 +280,7 @@ class Mask(BaseModel):
     def pil_image(
         self, height: int | None = None, width: int | None = None
     ) -> Image.Image:
-        """
-        Convert the mask to a PIL Image.
+        """Convert the mask to a PIL Image.
 
         Args:
             height: Optional height of the output image. If None, uses the mask's height
@@ -238,6 +303,11 @@ class Mask(BaseModel):
         return Image.fromarray(mask_array, mode="L")
 
     def _repr_html_(self) -> str:
+        """Generate HTML representation for Jupyter notebooks.
+        
+        Returns:
+            HTML string containing an image of the mask and its metadata
+        """
         img = self.pil_image()
         import base64
         from io import BytesIO
@@ -248,31 +318,21 @@ class Mask(BaseModel):
 
         return f"""
         <div style="
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            max-width: 800px;
-            margin: 20px 0;
-            background: #f8f9fa;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <div style="
-                padding: 15px;
-                background: #ffffff;
-                border-bottom: 1px solid #eee;">
-                <div style="color: #444; line-height: 1.6;">
-                    <span style="color: #666; display: inline-block; width: 80px;">Label:</span>
-                    <span style="font-weight: 500;">{self.label}</span><br>
-                    <span style="color: #666; display: inline-block; width: 80px;">Position:</span>
-                    <span style="font-weight: 500;">({self.left}, {self.top})</span><br>
-                    <span style="color: #666; display: inline-block; width: 80px;">Size:</span>
-                    <span style="font-weight: 500;">{self.width} × {self.height}px</span><br>
-                    <span style="color: #666; display: inline-block; width: 80px;">Z-order:</span>
-                    <span style="font-weight: 500;">{self.z_order}</span>
-                </div>
+            border: 1px solid #ccc;
+            padding: 10px;
+            display: inline-block;
+            border-radius: 5px;
+            margin: 5px;
+        ">
+            <div>
+                <strong>Label:</strong> {self.label}<br>
+                <strong>Source:</strong> {self.source}<br>
+                <strong>Size:</strong> {self.width}x{self.height}<br>
+                <strong>Position:</strong> ({self.left}, {self.top})<br>
             </div>
-            <div style="padding: 15px; text-align: center;">
-                <img src="data:image/png;base64,{img_str}" 
-                     style="max-width: 100%; height: auto; border-radius: 4px;" />
+            <div style="margin-top: 10px;">
+                <img src="data:image/png;base64,{img_str}"
+                     style="max-width: 300px; max-height: 300px;">
             </div>
         </div>
         """

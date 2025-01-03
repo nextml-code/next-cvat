@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import List, Tuple
 
 import numpy as np
 from pydantic import BaseModel
@@ -11,60 +11,37 @@ from .polygon import Polygon
 
 class Box(BaseModel):
     """A bounding box annotation in CVAT.
-
-    Represents a rectangular region in an image with a label and optional attributes.
-    Coordinates are specified in pixels from the top-left corner of the image.
-
+    
+    Boxes are used to define rectangular regions in images using top-left and bottom-right coordinates.
+    They can be converted to polygons and segmentation masks.
+    
     Attributes:
-        label: Name of the label assigned to this box
-        xtl: X-coordinate of top-left corner
-        ytl: Y-coordinate of top-left corner
-        xbr: X-coordinate of bottom-right corner
-        ybr: Y-coordinate of bottom-right corner
-        occluded: Whether the object is occluded
-        z_order: Drawing order (higher numbers are drawn on top)
-        source: Source of the annotation ('manual' or 'auto')
+        label: The label/class name for this box
+        xtl: X-coordinate of the top-left corner
+        ytl: Y-coordinate of the top-left corner
+        xbr: X-coordinate of the bottom-right corner
+        ybr: Y-coordinate of the bottom-right corner
+        occluded: Whether this box is occluded (0 for no, 1 for yes)
+        z_order: The z-order/layer of this box
+        source: The source of this annotation (e.g. "manual", "automatic")
         attributes: List of additional attributes for this box
-
-    Example:
-        ```python
-        # Simple box
-        box = Box(
-            label="car",
-            xtl=100,
-            ytl=200,
-            xbr=300,
-            ybr=400,
-            occluded=False,
-            z_order=1
-        )
-
-        # Box with attributes
-        box_with_attrs = Box(
-            label="car",
-            xtl=100,
-            ytl=200,
-            xbr=300,
-            ybr=400,
-            attributes=[
-                Attribute(name="color", value="red"),
-                Attribute(name="model", value="sedan")
-            ]
-        )
-        ```
     """
-
     label: str
     xtl: float
     ytl: float
     xbr: float
     ybr: float
-    occluded: bool = False
-    z_order: int = 0
-    source: str = "manual"  # Default to manual annotations
-    attributes: List[Attribute] = []
+    occluded: int
+    z_order: int
+    source: str = "manual"
+    attributes: List[Attribute]
 
     def polygon(self) -> Polygon:
+        """Convert the box to a polygon.
+        
+        Returns:
+            A Polygon instance representing the box's corners
+        """
         points = [
             (self.xtl, self.ytl),
             (self.xbr, self.ytl),
@@ -81,4 +58,13 @@ class Box(BaseModel):
         )
 
     def segmentation(self, height: int, width: int) -> np.ndarray:
-        return self.polygon().segmentation(height, width)
+        """Create a boolean segmentation mask for the box.
+        
+        Args:
+            height: Height of the output mask
+            width: Width of the output mask
+            
+        Returns:
+            A numpy 2D array of booleans where True indicates the box interior
+        """
+        return self.polygon().segmentation(height=height, width=width)
