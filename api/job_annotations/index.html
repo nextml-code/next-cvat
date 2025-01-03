@@ -86,7 +86,9 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="next-cvat" class="md-header__button md-logo" aria-label="next-cvat" data-md-component="logo">
       
@@ -205,70 +207,6 @@
       
         
           
-            
-<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
-  <div class="md-grid">
-    <ul class="md-tabs__list">
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
-        
-  
-    
-  
-  Home
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-    
-  
-  
-    
-    
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../client/" class="md-tabs__link">
-          
-  
-  API Reference
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../../examples/basic_usage/" class="md-tabs__link">
-          
-  
-  Examples
-
-        </a>
-      </li>
-    
-  
-
-      
-    </ul>
-  </div>
-</nav>
-          
         
       
       <main class="md-main" data-md-component="main">
@@ -282,12 +220,10 @@
                     
 
 
-  
-
 
   
 
-<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="next-cvat" class="md-nav__button md-logo" aria-label="next-cvat" data-md-component="logo">
       
@@ -318,16 +254,87 @@
   
   
   
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Home
+    Overview
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/basic_usage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Basic Usage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -347,9 +354,6 @@
         
         
       
-      
-        
-      
     
     
     <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
@@ -363,7 +367,7 @@
             
   
   <span class="md-ellipsis">
-    API Reference
+    API Documentation
   </span>
   
 
@@ -373,7 +377,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
-            API Reference
+            API Documentation
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -477,6 +481,17 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    JobAnnotations
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -486,6 +501,34 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#next_cvat.client.job_annotations.JobAnnotations" class="md-nav__link">
+    <span class="md-ellipsis">
+      JobAnnotations
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -534,55 +577,6 @@
 
               
             
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
-        
-          
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    Examples
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
-            <span class="md-nav__icon md-icon"></span>
-            Examples
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
               
                 
   
@@ -590,11 +584,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/basic_usage/" class="md-nav__link">
+      <a href="../types/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Basic Usage
+    Types
   </span>
   
 
@@ -629,7 +623,7 @@
   
 
 
-<h1 id="jobannotations">JobAnnotations</h1>
+<h1 id="jobannotations">JobAnnotations<a class="headerlink" href="#jobannotations" title="Permanent link">&para;</a></h1>
 <p>The <code>JobAnnotations</code> class represents annotations for a CVAT job and provides methods for managing annotation data.</p>
 
 
@@ -637,16 +631,14 @@
 
 
 
-<h1 id="next_cvat.client.job_annotations.JobAnnotations" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <code>next_cvat.client.job_annotations.JobAnnotations</code>
+<h3 id="next_cvat.client.job_annotations.JobAnnotations" class="doc doc-heading">
+          <code>JobAnnotations</code>
 
 
-</h1>
+<a href="#next_cvat.client.job_annotations.JobAnnotations" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
   <div class="doc doc-contents first">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
 
 
@@ -655,142 +647,6 @@
   <div class="doc doc-children">
 
 
-
-
-
-<h2 id="next_cvat.client.job_annotations.JobAnnotations-attributes">Attributes</h2>
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h3 id="next_cvat.client.job_annotations.JobAnnotations.job" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <code class="highlight language-python"><span class="n">next_cvat</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">job_annotations</span><span class="o">.</span><span class="n">JobAnnotations</span><span class="o">.</span><span class="n">job</span><span class="p">:</span> <span class="n">Job</span></code>
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
-  </span>
-
-</h3>
-
-
-  <div class="doc doc-contents ">
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h3 id="next_cvat.client.job_annotations.JobAnnotations.annotations" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <code class="highlight language-python"><span class="n">next_cvat</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">job_annotations</span><span class="o">.</span><span class="n">JobAnnotations</span><span class="o">.</span><span class="n">annotations</span><span class="p">:</span> <span class="nb">dict</span></code>
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
-  </span>
-
-</h3>
-
-
-  <div class="doc doc-contents ">
-  </div>
-
-</div>
-
-<h2 id="next_cvat.client.job_annotations.JobAnnotations-functions">Functions</h2>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h3 id="next_cvat.client.job_annotations.JobAnnotations.add_mask_" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">next_cvat</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">job_annotations</span><span class="o">.</span><span class="n">JobAnnotations</span><span class="o">.</span><span class="n">add_mask_</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">image_name</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
-
-</h3>
-
-
-  <div class="doc doc-contents ">
-
-          <details class="quote">
-            <summary>Source code in <code>next_cvat/client/job_annotations.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_mask_</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span>
-    <span class="n">mask</span><span class="p">:</span> <span class="n">next_cvat</span><span class="o">.</span><span class="n">Mask</span><span class="p">,</span>
-    <span class="n">image_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">group</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JobAnnotations</span><span class="p">:</span>
-    <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">mask</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
-
-    <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">frame</span><span class="p">(</span><span class="n">image_name</span><span class="o">=</span><span class="n">image_name</span><span class="p">)</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">[</span><span class="s2">&quot;shapes&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-        <span class="n">mask</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
-            <span class="n">frame</span><span class="o">=</span><span class="n">frame</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-            <span class="n">label_id</span><span class="o">=</span><span class="n">label</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-            <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">)</span>
-
-    <span class="k">return</span> <span class="bp">self</span>
-</code></pre></div></td></tr></table></div>
-          </details>
-  </div>
-
-</div>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h3 id="next_cvat.client.job_annotations.JobAnnotations.request" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">next_cvat</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">job_annotations</span><span class="o">.</span><span class="n">JobAnnotations</span><span class="o">.</span><span class="n">request</span><span class="p">()</span></code>
-
-</h3>
-
-
-  <div class="doc doc-contents ">
-
-          <details class="quote">
-            <summary>Source code in <code>next_cvat/client/job_annotations.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">models</span><span class="o">.</span><span class="n">LabeledDataRequest</span><span class="p">:</span>
-    <span class="n">request</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">LabeledDataRequest</span><span class="p">()</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">shapes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">[</span><span class="s2">&quot;shapes&quot;</span><span class="p">]</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">tracks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">[</span><span class="s2">&quot;tracks&quot;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">request</span>
-</code></pre></div></td></tr></table></div>
-          </details>
-  </div>
-
-</div>
 
 
 
@@ -849,7 +705,7 @@ show_source: true</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "toc.integrate"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections", "navigation.expand", "toc.integrate", "toc.follow"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>

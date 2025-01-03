@@ -10,7 +10,7 @@
       
       
       
-        <link rel="next" href="api/client/">
+        <link rel="next" href="examples/basic_usage/">
       
       
       <link rel="icon" href="assets/images/favicon.png">
@@ -18,7 +18,7 @@
     
     
       
-        <title>next-cvat</title>
+        <title>Overview - next-cvat</title>
       
     
     
@@ -84,7 +84,9 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="." title="next-cvat" class="md-header__button md-logo" aria-label="next-cvat" data-md-component="logo">
       
@@ -106,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              Overview
             
           </span>
         </div>
@@ -203,70 +205,6 @@
       
         
           
-            
-<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
-  <div class="md-grid">
-    <ul class="md-tabs__list">
-      
-        
-  
-  
-    
-  
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="." class="md-tabs__link">
-        
-  
-    
-  
-  Home
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="api/client/" class="md-tabs__link">
-          
-  
-  API Reference
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="examples/basic_usage/" class="md-tabs__link">
-          
-  
-  Examples
-
-        </a>
-      </li>
-    
-  
-
-      
-    </ul>
-  </div>
-</nav>
-          
         
       
       <main class="md-main" data-md-component="main">
@@ -280,12 +218,10 @@
                     
 
 
-  
-
 
   
 
-<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="." title="next-cvat" class="md-nav__button md-logo" aria-label="next-cvat" data-md-component="logo">
       
@@ -318,6 +254,48 @@
   
   
   
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
     <li class="md-nav__item md-nav__item--active">
       
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
@@ -330,7 +308,7 @@
           
   
   <span class="md-ellipsis">
-    Home
+    Overview
   </span>
   
 
@@ -341,7 +319,7 @@
         
   
   <span class="md-ellipsis">
-    Home
+    Overview
   </span>
   
 
@@ -390,14 +368,23 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#api-reference" class="md-nav__link">
+  <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
-      API Reference
+      Overview
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="API Reference">
+    <nav class="md-nav" aria-label="Overview">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#client" class="md-nav__link">
+    <span class="md-ellipsis">
+      Client
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#annotations" class="md-nav__link">
@@ -409,45 +396,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#project" class="md-nav__link">
+  <a href="#types" class="md-nav__link">
     <span class="md-ellipsis">
-      Project
+      Types
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#task" class="md-nav__link">
+  <a href="#projects-and-tasks" class="md-nav__link">
     <span class="md-ellipsis">
-      Task
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#jobstatus" class="md-nav__link">
-    <span class="md-ellipsis">
-      JobStatus
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#imageannotation" class="md-nav__link">
-    <span class="md-ellipsis">
-      ImageAnnotation
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#box" class="md-nav__link">
-    <span class="md-ellipsis">
-      Box
+      Projects and Tasks
     </span>
   </a>
   
@@ -455,6 +415,15 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
   
 </li>
       
@@ -474,6 +443,35 @@
     </li>
   
 
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="examples/basic_usage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Basic Usage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
     
       
       
@@ -485,12 +483,12 @@
     
     
       
-      
+        
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
@@ -499,11 +497,11 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   <span class="md-ellipsis">
-    API Reference
+    API Documentation
   </span>
   
 
@@ -513,7 +511,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
-            API Reference
+            API Documentation
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -664,55 +662,6 @@
 
               
             
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
-        
-          
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    Examples
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
-            <span class="md-nav__icon md-icon"></span>
-            Examples
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
               
                 
   
@@ -720,11 +669,11 @@
   
   
     <li class="md-nav__item">
-      <a href="examples/basic_usage/" class="md-nav__link">
+      <a href="api/types/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Basic Usage
+    Types
   </span>
   
 
@@ -759,28 +708,28 @@
   
 
 
-<h1 id="next-cvat">next-cvat</h1>
+<h1 id="next-cvat">next-cvat<a class="headerlink" href="#next-cvat" title="Permanent link">&para;</a></h1>
 <p>A Python library for interacting with CVAT (Computer Vision Annotation Tool).</p>
-<h2 id="installation">Installation</h2>
-<pre><code class="language-bash">pip install next-cvat
-</code></pre>
-<h2 id="quick-start">Quick Start</h2>
-<pre><code class="language-python">from next_cvat import Client
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>next-cvat
+</code></pre></div>
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">next_cvat</span> <span class="kn">import</span> <span class="n">Client</span>
 
-# Initialize client from environment variables
-client = Client.from_env_file(&quot;.env.cvat.secrets&quot;)
+<span class="c1"># Initialize client from environment variables</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="o">.</span><span class="n">from_env_file</span><span class="p">(</span><span class="s2">&quot;.env.cvat.secrets&quot;</span><span class="p">)</span>
 
-# Get a project
-project = client.project(217969)
+<span class="c1"># Get a project</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="mi">217969</span><span class="p">)</span>
 
-# Download project data
-project.download_(&quot;dataset/&quot;)
+<span class="c1"># Download project data</span>
+<span class="n">project</span><span class="o">.</span><span class="n">download_</span><span class="p">(</span><span class="s2">&quot;dataset/&quot;</span><span class="p">)</span>
 
-# Load annotations
-from next_cvat import Annotations
-annotations = Annotations.from_path(&quot;dataset/annotations.xml&quot;)
-</code></pre>
-<h2 id="features">Features</h2>
+<span class="c1"># Load annotations</span>
+<span class="kn">from</span> <span class="nn">next_cvat</span> <span class="kn">import</span> <span class="n">Annotations</span>
+<span class="n">annotations</span> <span class="o">=</span> <span class="n">Annotations</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="s2">&quot;dataset/annotations.xml&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Easy-to-use Python interface for CVAT</li>
 <li>Support for projects, tasks, jobs, and annotations</li>
@@ -789,111 +738,39 @@ annotations = Annotations.from_path(&quot;dataset/annotations.xml&quot;)
 <li>Job status tracking</li>
 <li>Comprehensive type hints and documentation</li>
 </ul>
-<h2 id="api-reference">API Reference</h2>
-<h3 id="annotations">Annotations</h3>
-<p>The <code>Annotations</code> class provides functionality to load, save and query CVAT annotations:</p>
-<pre><code class="language-python"># Load annotations from XML file
-annotations = Annotations.from_path(&quot;annotations.xml&quot;)
-
-# Load annotations with job status
-annotations = Annotations.from_path(
-    &quot;annotations.xml&quot;,
-    &quot;job_status.json&quot;
-)
-
-# Get completed tasks and their images
-completed_tasks = annotations.get_completed_tasks()
-completed_images = annotations.get_images_from_completed_tasks()
-
-# Get task status
-task_status = annotations.get_task_status(&quot;1234&quot;)
-# Returns: {&quot;5678&quot;: &quot;completed&quot;, &quot;5679&quot;: &quot;in_progress&quot;}
-
-# Create CVAT link for an image
-link = annotations.create_cvat_link(&quot;image1.jpg&quot;)
-# Returns: &quot;https://app.cvat.ai/tasks/453747/jobs/520016&quot;
-</code></pre>
-<h3 id="project">Project</h3>
-<p>The <code>Project</code> class represents a CVAT project:</p>
-<pre><code class="language-python">project = Project(
-    id=&quot;217969&quot;,
-    name=&quot;My Project&quot;,
-    created=&quot;2024-01-01 12:00:00.000000+00:00&quot;,
-    updated=&quot;2024-01-01 12:00:00.000000+00:00&quot;,
-    labels=[
-        Label(name=&quot;car&quot;, color=&quot;#ff0000&quot;, type=&quot;any&quot;),
-        Label(name=&quot;person&quot;, color=&quot;#00ff00&quot;, type=&quot;any&quot;)
-    ]
-)
-</code></pre>
-<h3 id="task">Task</h3>
-<p>The <code>Task</code> class represents a unit of work for annotation:</p>
-<pre><code class="language-python">task = Task(
-    task_id=&quot;906591&quot;,
-    name=&quot;Batch 1&quot;,
-    url=&quot;https://app.cvat.ai/api/jobs/520016&quot;
-)
-</code></pre>
-<h3 id="jobstatus">JobStatus</h3>
-<p>The <code>JobStatus</code> class tracks the status of annotation jobs:</p>
-<pre><code class="language-python"># Create from job status data
-status = JobStatus(
-    task_id=&quot;906591&quot;,
-    job_id=520016,
-    task_name=&quot;Batch 1&quot;,
-    stage=&quot;annotation&quot;,
-    state=&quot;completed&quot;,
-    assignee=&quot;john.doe&quot;
-)
-
-# Create from CVAT SDK job object
-status = JobStatus.from_job(job, task_name=&quot;Batch 1&quot;)
-print(status.assignee_email)  # Get assignee's email
-</code></pre>
-<h3 id="imageannotation">ImageAnnotation</h3>
-<p>The <code>ImageAnnotation</code> class represents annotations for a single image:</p>
-<pre><code class="language-python">image = ImageAnnotation(
-    id=&quot;1&quot;,
-    name=&quot;frame_000001.jpg&quot;,
-    subset=&quot;train&quot;,
-    task_id=&quot;906591&quot;,
-    width=1920,
-    height=1080,
-    boxes=[
-        Box(label=&quot;car&quot;, xtl=100, ytl=200, xbr=300, ybr=400)
-    ],
-    masks=[
-        Mask(label=&quot;person&quot;, points=&quot;100,200;300,400&quot;, z_order=1)
-    ]
-)
-</code></pre>
-<h3 id="box">Box</h3>
-<p>The <code>Box</code> class represents a bounding box annotation:</p>
-<pre><code class="language-python"># Simple box
-box = Box(
-    label=&quot;car&quot;,
-    xtl=100,
-    ytl=200,
-    xbr=300,
-    ybr=400,
-    occluded=False,
-    z_order=1
-)
-
-# Box with attributes
-box_with_attrs = Box(
-    label=&quot;car&quot;,
-    xtl=100,
-    ytl=200,
-    xbr=300,
-    ybr=400,
-    attributes=[
-        Attribute(name=&quot;color&quot;, value=&quot;red&quot;),
-        Attribute(name=&quot;model&quot;, value=&quot;sedan&quot;)
-    ]
-)
-</code></pre>
-<h2 id="contributing">Contributing</h2>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The library provides several key components:</p>
+<h3 id="client">Client<a class="headerlink" href="#client" title="Permanent link">&para;</a></h3>
+<p>The main entry point for interacting with CVAT. Handles authentication and provides access to projects, tasks, and jobs.</p>
+<p><a href="api/client/">View Client Documentation →</a></p>
+<h3 id="annotations">Annotations<a class="headerlink" href="#annotations" title="Permanent link">&para;</a></h3>
+<p>Load, save, and query CVAT annotations. Track job status and manage annotation data.</p>
+<p><a href="api/annotations/">View Annotations Documentation →</a></p>
+<h3 id="types">Types<a class="headerlink" href="#types" title="Permanent link">&para;</a></h3>
+<p>Rich set of data types for working with CVAT annotations:</p>
+<ul>
+<li><strong>Box</strong>: Bounding box annotations</li>
+<li><strong>Polygon</strong>: Polygon annotations with segmentation support</li>
+<li><strong>Mask</strong>: Efficient binary mask storage with RLE encoding</li>
+<li><strong>ImageAnnotation</strong>: Container for image annotations</li>
+<li><strong>JobStatus</strong>: Track annotation progress</li>
+<li><strong>Label</strong>: Label definitions with attributes</li>
+<li><strong>Attribute</strong>: Custom annotation attributes</li>
+</ul>
+<p><a href="api/types/">View Types Documentation →</a></p>
+<h3 id="projects-and-tasks">Projects and Tasks<a class="headerlink" href="#projects-and-tasks" title="Permanent link">&para;</a></h3>
+<p>Manage CVAT projects and tasks:</p>
+<ul>
+<li><strong>Project</strong>: Container for tasks and labels</li>
+<li><strong>Task</strong>: Unit of work for annotation</li>
+<li><strong>Job</strong>: Individual annotation assignments</li>
+</ul>
+<p><a href="api/project/">View Project Documentation →</a><br />
+<a href="api/task/">View Task Documentation →</a><br />
+<a href="api/job/">View Job Documentation →</a></p>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
+<p>For detailed usage examples, see the <a href="examples/basic_usage/">Examples</a> section.</p>
+<h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
 <p>Contributions are welcome! Please feel free to submit a Pull Request.</p>
 
 
@@ -941,7 +818,7 @@ box_with_attrs = Box(
     </div>
     
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "toc.integrate"], "search": "assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.sections", "navigation.expand", "toc.integrate", "toc.follow"], "search": "assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="assets/javascripts/bundle.88dd0f4e.min.js"></script>

@@ -86,7 +86,9 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="next-cvat" class="md-header__button md-logo" aria-label="next-cvat" data-md-component="logo">
       
@@ -205,70 +207,6 @@
       
         
           
-            
-<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
-  <div class="md-grid">
-    <ul class="md-tabs__list">
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
-        
-  
-    
-  
-  Home
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-    
-  
-  
-    
-    
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../client/" class="md-tabs__link">
-          
-  
-  API Reference
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../../examples/basic_usage/" class="md-tabs__link">
-          
-  
-  Examples
-
-        </a>
-      </li>
-    
-  
-
-      
-    </ul>
-  </div>
-</nav>
-          
         
       
       <main class="md-main" data-md-component="main">
@@ -282,12 +220,10 @@
                     
 
 
-  
-
 
   
 
-<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="next-cvat" class="md-nav__button md-logo" aria-label="next-cvat" data-md-component="logo">
       
@@ -318,16 +254,87 @@
   
   
   
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Home
+    Overview
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/basic_usage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Basic Usage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -347,9 +354,6 @@
         
         
       
-      
-        
-      
     
     
     <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
@@ -363,7 +367,7 @@
             
   
   <span class="md-ellipsis">
-    API Reference
+    API Documentation
   </span>
   
 
@@ -373,7 +377,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
-            API Reference
+            API Documentation
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -639,55 +643,6 @@
 
               
             
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
-        
-          
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    Examples
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
-            <span class="md-nav__icon md-icon"></span>
-            Examples
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
               
                 
   
@@ -695,11 +650,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/basic_usage/" class="md-nav__link">
+      <a href="../types/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Basic Usage
+    Types
   </span>
   
 
@@ -734,9 +689,9 @@
   
 
 
-<h1 id="job-status">Job Status</h1>
+<h1 id="job-status">Job Status<a class="headerlink" href="#job-status" title="Permanent link">&para;</a></h1>
 <p>The <code>JobStatus</code> class tracks the status of annotation jobs in CVAT.</p>
-<h2 id="properties">Properties</h2>
+<h2 id="properties">Properties<a class="headerlink" href="#properties" title="Permanent link">&para;</a></h2>
 <ul>
 <li><code>task_id: str</code> - ID of the task this job belongs to</li>
 <li><code>job_id: int</code> - Unique identifier for the job</li>
@@ -745,31 +700,31 @@
 <li><code>state: str</code> - Current state of the job (e.g., "completed", "in_progress")</li>
 <li><code>assignee: Optional[Union[str, Dict[str, Any]]]</code> - Username or details of the person assigned to the job</li>
 </ul>
-<h2 id="usage">Usage</h2>
-<h3 id="creating-from-job-status-data">Creating from Job Status Data</h3>
-<pre><code class="language-python">status = JobStatus(
-    task_id=&quot;906591&quot;,
-    job_id=520016,
-    task_name=&quot;Batch 1&quot;,
-    stage=&quot;annotation&quot;,
-    state=&quot;completed&quot;,
-    assignee=&quot;john.doe&quot;
-)
-</code></pre>
-<h3 id="creating-from-cvat-sdk-job-object">Creating from CVAT SDK Job Object</h3>
-<pre><code class="language-python">status = JobStatus.from_job(job, task_name=&quot;Batch 1&quot;)
-print(status.assignee_email)  # Get assignee's email
-</code></pre>
-<h2 id="methods">Methods</h2>
-<h3 id="from_job">from_job</h3>
-<pre><code class="language-python">@classmethod
-def from_job(cls, job, task_name: str) -&gt; JobStatus
-</code></pre>
+<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
+<h3 id="creating-from-job-status-data">Creating from Job Status Data<a class="headerlink" href="#creating-from-job-status-data" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">status</span> <span class="o">=</span> <span class="n">JobStatus</span><span class="p">(</span>
+    <span class="n">task_id</span><span class="o">=</span><span class="s2">&quot;906591&quot;</span><span class="p">,</span>
+    <span class="n">job_id</span><span class="o">=</span><span class="mi">520016</span><span class="p">,</span>
+    <span class="n">task_name</span><span class="o">=</span><span class="s2">&quot;Batch 1&quot;</span><span class="p">,</span>
+    <span class="n">stage</span><span class="o">=</span><span class="s2">&quot;annotation&quot;</span><span class="p">,</span>
+    <span class="n">state</span><span class="o">=</span><span class="s2">&quot;completed&quot;</span><span class="p">,</span>
+    <span class="n">assignee</span><span class="o">=</span><span class="s2">&quot;john.doe&quot;</span>
+<span class="p">)</span>
+</code></pre></div>
+<h3 id="creating-from-cvat-sdk-job-object">Creating from CVAT SDK Job Object<a class="headerlink" href="#creating-from-cvat-sdk-job-object" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">status</span> <span class="o">=</span> <span class="n">JobStatus</span><span class="o">.</span><span class="n">from_job</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">task_name</span><span class="o">=</span><span class="s2">&quot;Batch 1&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">status</span><span class="o">.</span><span class="n">assignee_email</span><span class="p">)</span>  <span class="c1"># Get assignee&#39;s email</span>
+</code></pre></div>
+<h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
+<h3 id="from_job">from_job<a class="headerlink" href="#from_job" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">from_job</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">job</span><span class="p">,</span> <span class="n">task_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JobStatus</span>
+</code></pre></div>
 <p>Create a JobStatus from a CVAT SDK job object.</p>
-<h3 id="assignee_email">assignee_email</h3>
-<pre><code class="language-python">@property
-def assignee_email(self) -&gt; Optional[str]
-</code></pre>
+<h3 id="assignee_email">assignee_email<a class="headerlink" href="#assignee_email" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="nd">@property</span>
+<span class="k">def</span> <span class="nf">assignee_email</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</code></pre></div>
 <p>Get the assignee's email if available. Returns the username from the assignee dictionary or the assignee string directly.</p>
 
 
@@ -817,7 +772,7 @@ def assignee_email(self) -&gt; Optional[str]
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "toc.integrate"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections", "navigation.expand", "toc.integrate", "toc.follow"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
