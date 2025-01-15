@@ -8,3 +8,4 @@ from pydantic import BaseModel
 class Attribute(BaseModel):
     name: str
     value: Optional[str]
+    spec_id: Optional[int] = None
