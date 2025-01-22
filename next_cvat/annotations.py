@@ -58,7 +58,11 @@ class Annotations(BaseModel):
     job_status: List[JobStatus] = []
 
     @classmethod
-    def from_path(cls, xml_annotation_path: Union[str, Path], job_status_path: Optional[Union[str, Path]] = None) -> Annotations:
+    def from_path(
+        cls,
+        xml_annotation_path: Union[str, Path],
+        job_status_path: Optional[Union[str, Path]] = None,
+    ) -> Annotations:
         """Load annotations from XML file and optionally include job status information.
 
         Args:
@@ -409,11 +413,7 @@ class Annotations(BaseModel):
             ```
         """
         completed_task_ids = self.get_completed_task_ids()
-        return [
-            image
-            for image in self.images
-            if image.task_id in completed_task_ids
-        ]
+        return [image for image in self.images if image.task_id in completed_task_ids]
 
     def create_cvat_link(self, image_name: str) -> str:
         """Create a CVAT link for the given image name.
@@ -422,7 +422,7 @@ class Annotations(BaseModel):
             image_name: Name of the image
 
         Returns:
-            A CVAT link in the format: https://app.cvat.ai/tasks/{task_id}/jobs/{job_id}
+            A CVAT link in the format: https://app.cvat.ai/tasks/{task_id}/jobs/{job_id}?frame={frame_index}
 
         Raises:
             ValueError: If the image or its associated job is not found
@@ -430,29 +430,37 @@ class Annotations(BaseModel):
         Example:
             ```python
             link = annotations.create_cvat_link("image1.jpg")
-            # Returns: "https://app.cvat.ai/tasks/453747/jobs/520016"
+            # Returns: "https://app.cvat.ai/tasks/453747/jobs/520016?frame=0"
             ```
         """
         images = list(sorted(self.images, key=lambda image: image.name))
-        
+
         # lookup task id for the given image name
         task_id = None
         for image in images:
-            if image.name == image_name:
+            if Path(image.name).name == image_name:
                 task_id = image.task_id
                 break
-                
+
         if task_id is None:
             raise ValueError(f"Image {image_name} not found")
-            
+
+        # Calculate frame index by counting images in same task before this one
+        frame_index = 0
+        for image in images:
+            if image.task_id == task_id:
+                if Path(image.name).name == image_name:
+                    break
+                frame_index += 1
+
         # lookup job id for the task
         job_id = None
         for job in self.job_status:
             if job.task_id == task_id:
                 job_id = job.job_id
                 break
-                
+
         if job_id is None:
             raise ValueError(f"No job found for task {task_id}")
-            
-        return f"https://app.cvat.ai/tasks/{task_id}/jobs/{job_id}"
+
+        return f"https://app.cvat.ai/tasks/{task_id}/jobs/{job_id}?frame={frame_index}"
