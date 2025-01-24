@@ -20,6 +20,7 @@ class ImageAnnotation(BaseModel):
         name: Filename of the image
         subset: Optional subset the image belongs to (e.g., "train", "test")
         task_id: ID of the task this image belongs to
+        job_id: ID of the job this image belongs to
         width: Image width in pixels
         height: Image height in pixels
         boxes: List of bounding box annotations
@@ -34,6 +35,7 @@ class ImageAnnotation(BaseModel):
             name="frame_000001.jpg",
             subset="train",
             task_id="906591",
+            job_id="1247749",
             width=1920,
             height=1080,
             boxes=[
@@ -50,6 +52,7 @@ class ImageAnnotation(BaseModel):
     name: str
     subset: Optional[str] = None
     task_id: Optional[str] = None
+    job_id: Optional[str] = None
     width: int
     height: int
     boxes: List[Box] = []

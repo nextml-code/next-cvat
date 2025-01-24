@@ -112,9 +112,9 @@ class Annotations(BaseModel):
             labels=labels,
         )
 
-        # Parse tasks
+        # Parse tasks and store task_id to job_id mapping
         tasks = []
-        # Try both possible locations for tasks
+        task_job_mapping = {}
         task_locations = ["meta/tasks/task", "meta/project/tasks/task"]
         for location in task_locations:
             for task in root.findall(location):
@@ -123,7 +123,14 @@ class Annotations(BaseModel):
                 url_tag = task.find("segments/segment/url")
                 if url_tag is not None:
                     task_instance = Task(task_id=task_id, name=name, url=url_tag.text)
-                    tasks.append(task_instance)  # Store the task instance
+                    tasks.append(task_instance)
+                    # Extract job_id from URL if available
+                    if url_tag.text:
+                        try:
+                            job_id = url_tag.text.split("/")[-1]
+                            task_job_mapping[task_id] = job_id
+                        except (IndexError, AttributeError):
+                            pass
 
         # Parse image annotations
         images = []
@@ -164,12 +171,17 @@ class Annotations(BaseModel):
                     Polyline(**polyline.attrib, attributes=polyline_attributes)
                 )
 
+            # Get job_id from task_job_mapping if available
+            task_id = image.get("task_id")
+            job_id = task_job_mapping.get(task_id) if task_id else None
+
             images.append(
                 ImageAnnotation(
                     id=image.get("id"),
                     name=image.get("name"),
                     subset=image.get("subset"),
-                    task_id=image.get("task_id"),
+                    task_id=task_id,
+                    job_id=job_id,
                     width=int(image.get("width")),
                     height=int(image.get("height")),
                     boxes=boxes,
@@ -271,6 +283,8 @@ class Annotations(BaseModel):
                 image_elem.set("subset", image.subset)
             if image.task_id:
                 image_elem.set("task_id", image.task_id)
+            if image.job_id:
+                image_elem.set("job_id", image.job_id)
             image_elem.set("width", str(image.width))
             image_elem.set("height", str(image.height))
 
@@ -349,8 +363,19 @@ class Annotations(BaseModel):
             # Returns: {"5678": "completed", "5679": "in_progress"}
             ```
         """
+        # Find the job ID from the task URL
+        job_id = None
+        for task in self.tasks:
+            if task.task_id == task_id and task.url:
+                job_id = task.url.split("/")[-1]
+                break
+
+        if job_id is None:
+            return {}
+
+        # Map the job ID to its status
         return {
-            str(status.job_id): status.state
+            job_id: status.state
             for status in self.job_status
             if status.task_id == task_id
         }
