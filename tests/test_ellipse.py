@@ -1,6 +1,7 @@
 from pathlib import Path
 from xml.etree import ElementTree
 
+import numpy as np
 import pytest
 
 from next_cvat import Annotations
@@ -118,3 +119,67 @@ def test_ellipse_creation():
     assert saved_ellipse.rx == 30.0
     assert saved_ellipse.ry == 15.0
     assert len(saved_ellipse.attributes) == 2
+
+
+def test_ellipse_to_polygon():
+    """Test converting ellipse to polygon approximation."""
+    ellipse = Ellipse(
+        label="test",
+        cx=100.0,
+        cy=100.0,
+        rx=50.0,
+        ry=25.0,
+        z_order=0,
+    )
+
+    # Convert to polygon with default number of points
+    poly = ellipse.polygon()
+    assert len(poly.points) == 32  # Default number of points
+    assert poly.label == ellipse.label
+    assert poly.z_order == ellipse.z_order
+
+    # Test with custom number of points
+    poly = ellipse.polygon(num_points=16)
+    assert len(poly.points) == 16
+
+    # Verify points lie on the ellipse
+    for x, y in poly.points:
+        # Points should satisfy the ellipse equation approximately
+        # ((x-h)/rx)^2 + ((y-k)/ry)^2 ≈ 1
+        dist = ((x - ellipse.cx) / ellipse.rx) ** 2 + (
+            (y - ellipse.cy) / ellipse.ry
+        ) ** 2
+        assert abs(dist - 1.0) < 1e-10
+
+
+def test_ellipse_segmentation():
+    """Test creating segmentation mask from ellipse."""
+    ellipse = Ellipse(
+        label="test",
+        cx=50.0,
+        cy=30.0,
+        rx=20.0,
+        ry=10.0,
+        z_order=0,
+    )
+
+    # Create segmentation mask
+    height, width = 60, 100
+    mask = ellipse.segmentation(height=height, width=width)
+
+    # Check mask properties
+    assert mask.shape == (height, width)
+    assert mask.dtype == bool
+
+    # Center point should be True
+    assert mask[30, 50]  # cy, cx
+
+    # Points far outside should be False
+    assert not mask[0, 0]  # Top-left corner
+    assert not mask[-1, -1]  # Bottom-right corner
+
+    # Check approximate area
+    # Ellipse area should be approximately pi * rx * ry
+    expected_area = np.pi * ellipse.rx * ellipse.ry
+    actual_area = np.sum(mask)
+    assert abs(actual_area - expected_area) / expected_area < 0.1  # Within 10%
