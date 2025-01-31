@@ -5,6 +5,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 from .box import Box
+from .ellipse import Ellipse
 from .mask import Mask
 from .polygon import Polygon
 from .polyline import Polyline
@@ -13,7 +14,7 @@ from .polyline import Polyline
 class ImageAnnotation(BaseModel):
     """Annotation data for a single image in CVAT.
 
-    Contains all annotation shapes (boxes, polygons, masks, polylines) associated with an image.
+    Contains all annotation shapes (boxes, polygons, masks, polylines, ellipses) associated with an image.
 
     Attributes:
         id: Unique identifier for the image
@@ -27,6 +28,7 @@ class ImageAnnotation(BaseModel):
         polygons: List of polygon annotations
         masks: List of mask annotations
         polylines: List of polyline annotations
+        ellipses: List of ellipse annotations
 
     Example:
         ```python
@@ -43,6 +45,9 @@ class ImageAnnotation(BaseModel):
             ],
             masks=[
                 Mask(label="person", points="100,200;300,400", z_order=1)
+            ],
+            ellipses=[
+                Ellipse(label="defect", cx=500, cy=600, rx=50, ry=30)
             ]
         )
         ```
@@ -59,3 +64,4 @@ class ImageAnnotation(BaseModel):
     polygons: List[Polygon] = []
     masks: List[Mask] = []
     polylines: List[Polyline] = []
+    ellipses: List[Ellipse] = []
