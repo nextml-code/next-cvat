@@ -462,28 +462,17 @@ class Annotations(BaseModel):
 
         # lookup task id for the given image name
         task_id = None
+        job_id = None
+        frame_index = 0
         for image in images:
             if Path(image.name).name == image_name:
                 task_id = image.task_id
+                job_id = image.job_id
                 break
+            frame_index += 1
 
         if task_id is None:
             raise ValueError(f"Image {image_name} not found")
-
-        # Calculate frame index by counting images in same task before this one
-        frame_index = 0
-        for image in images:
-            if image.task_id == task_id:
-                if Path(image.name).name == image_name:
-                    break
-                frame_index += 1
-
-        # lookup job id for the task
-        job_id = None
-        for job in self.job_status:
-            if job.task_id == task_id:
-                job_id = job.job_id
-                break
 
         if job_id is None:
             raise ValueError(f"No job found for task {task_id}")
