@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from .types import (
     Attribute,
     Box,
+    Ellipse,
     ImageAnnotation,
     JobStatus,
     Label,
@@ -171,6 +172,16 @@ class Annotations(BaseModel):
                     Polyline(**polyline.attrib, attributes=polyline_attributes)
                 )
 
+            ellipses = []
+            for ellipse in image.findall("ellipse"):
+                ellipse_attributes = [
+                    Attribute(name=attr.get("name"), value=attr.text)
+                    for attr in ellipse.findall("attribute")
+                ]
+                ellipses.append(
+                    Ellipse(**ellipse.attrib, attributes=ellipse_attributes)
+                )
+
             # Get job_id from task_job_mapping if available
             task_id = image.get("task_id")
             job_id = task_job_mapping.get(task_id) if task_id else None
@@ -188,6 +199,7 @@ class Annotations(BaseModel):
                     polygons=polygons,
                     masks=masks,
                     polylines=polylines,
+                    ellipses=ellipses,
                 )
             )
 
@@ -337,6 +349,19 @@ class Annotations(BaseModel):
                 if polyline.attributes:
                     for attr in polyline.attributes:
                         attr_elem = ElementTree.SubElement(line_elem, "attribute")
+                        attr_elem.set("name", attr.name)
+                        attr_elem.text = attr.value
+
+            # Add ellipses
+            for ellipse in image.ellipses:
+                ellipse_elem = ElementTree.SubElement(image_elem, "ellipse")
+                for key, value in ellipse.model_dump().items():
+                    if key != "attributes" and value is not None:
+                        ellipse_elem.set(key, str(value))
+
+                if ellipse.attributes:
+                    for attr in ellipse.attributes:
+                        attr_elem = ElementTree.SubElement(ellipse_elem, "attribute")
                         attr_elem.set("name", attr.name)
                         attr_elem.text = attr.value
 

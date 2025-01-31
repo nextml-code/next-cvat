@@ -1,5 +1,6 @@
 from .attribute import Attribute
 from .box import Box
+from .ellipse import Ellipse
 from .image_annotation import ImageAnnotation
 from .job_status import JobStatus
 from .label import Label
@@ -13,6 +14,7 @@ from .task import Task
 __all__ = [
     "Attribute",
     "Box",
+    "Ellipse",
     "ImageAnnotation",
     "JobStatus",
     "Label",
