@@ -1313,7 +1313,7 @@ They can be created from numpy arrays or PIL Images and support various operatio
 
   
       <p>Annotation data for a single image in CVAT.</p>
-<p>Contains all annotation shapes (boxes, polygons, masks, polylines) associated with an image.</p>
+<p>Contains all annotation shapes (boxes, polygons, masks, polylines, ellipses) associated with an image.</p>
 
 
 
@@ -1479,6 +1479,20 @@ They can be created from numpy arrays or PIL Images and support various operatio
             </p>
           </td>
         </tr>
+        <tr>
+          <td><code><span title="next_cvat.types.image_annotation.ImageAnnotation.ellipses">ellipses</span></code></td>
+          <td class="doc-attribute-details">
+            <div class="doc-md-description">
+              <p>List of ellipse annotations</p>
+            </div>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code><span title="typing.List">List</span>[<span title="next_cvat.types.ellipse.Ellipse">Ellipse</span>]</code>
+                </span>
+            </p>
+          </td>
+        </tr>
     </tbody>
   </table>
 
@@ -1497,6 +1511,9 @@ They can be created from numpy arrays or PIL Images and support various operatio
     <span class="p">],</span>
     <span class="n">masks</span><span class="o">=</span><span class="p">[</span>
         <span class="n">Mask</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;person&quot;</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="s2">&quot;100,200;300,400&quot;</span><span class="p">,</span> <span class="n">z_order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">ellipses</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Ellipse</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;defect&quot;</span><span class="p">,</span> <span class="n">cx</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">cy</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">rx</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ry</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
     <span class="p">]</span>
 <span class="p">)</span>
 </code></pre></div>
