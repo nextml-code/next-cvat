@@ -465,6 +465,7 @@ class Annotations(BaseModel):
         completed_task_ids = self.get_completed_task_ids()
         return [image for image in self.images if image.task_id in completed_task_ids]
 
+
     def create_cvat_link(self, image_name: str) -> str:
         """Create a CVAT link for the given image name.
 
@@ -488,13 +489,18 @@ class Annotations(BaseModel):
         # lookup task id for the given image name
         task_id = None
         job_id = None
-        frame_index = 0
         for image in images:
             if Path(image.name).name == image_name:
-                task_id = image.task_id
                 job_id = image.job_id
+                task_id = image.task_id
                 break
-            frame_index += 1
+
+        frame_index = 0
+        for image in images:
+            if image.task_id == task_id:
+                if Path(image.name).name == image_name:
+                    break
+                frame_index += 1
 
         if task_id is None:
             raise ValueError(f"Image {image_name} not found")
