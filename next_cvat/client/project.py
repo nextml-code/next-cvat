@@ -31,7 +31,7 @@ class Project(BaseModel):
 
     def download_(self, dataset_path: Union[str, Path]) -> Project:
         """Download project data to the specified path.
-        
+
         Args:
             dataset_path: Path where to save the project data. Will create:
                 - annotations.xml: Project annotations
@@ -41,7 +41,7 @@ class Project(BaseModel):
         dataset_path.mkdir(parents=True, exist_ok=True)
 
         print(f"Downloading project {self.id} to {dataset_path}")
-        
+
         with self.cvat() as cvat_project:
             # Download dataset (includes both annotations and images)
             with tempfile.TemporaryDirectory() as temp_dir:
@@ -72,25 +72,25 @@ class Project(BaseModel):
     def create_task_(
         self,
         name: str,
-        image_quality: int = 70,
+        image_quality: int = 100,
     ) -> Task:
         """
         Create a new task in this project.
-        
+
         Args:
             name: Name of the task
             image_quality: Image quality (0-100) for compressed images
-            
+
         Returns:
             Task object representing the created task
         """
         with self.client.cvat_client() as client:
             # Get project details to get the organization ID
             project = client.projects.retrieve(self.id)
-            
+
             # Set organization header
-            client.api_client.set_default_header('X-Organization', 'NextMLAB')
-            
+            client.api_client.set_default_header("X-Organization", "NextMLAB")
+
             # Create task in the project
             spec = models.TaskWriteRequest(
                 name=name,
@@ -141,7 +141,7 @@ class Project(BaseModel):
     def delete_task_(self, task_id: int) -> None:
         """
         Delete a task from this project.
-        
+
         Args:
             task_id: ID of the task to delete
         """
