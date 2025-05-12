@@ -89,7 +89,7 @@ class Task(BaseModel):
     def upload_images_(
         self,
         image_paths: Union[str, Path, List[Union[str, Path]]],
-        image_quality: int = 70,
+        image_quality: int = 100,
     ) -> None:
         """
         Upload images to this task
