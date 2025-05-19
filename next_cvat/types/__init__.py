@@ -9,6 +9,7 @@ from .mask import Mask
 from .polygon import Polygon
 from .polyline import Polyline
 from .project import Project
+from .tag import Tag
 from .task import Task
 
 __all__ = [
@@ -23,5 +24,6 @@ __all__ = [
     "Polygon",
     "Polyline",
     "Project",
+    "Tag",
     "Task",
 ]
