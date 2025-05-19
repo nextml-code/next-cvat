@@ -9,6 +9,7 @@ from .ellipse import Ellipse
 from .mask import Mask
 from .polygon import Polygon
 from .polyline import Polyline
+from .tag import Tag
 
 
 class ImageAnnotation(BaseModel):
@@ -29,6 +30,7 @@ class ImageAnnotation(BaseModel):
         masks: List of mask annotations
         polylines: List of polyline annotations
         ellipses: List of ellipse annotations
+        tags: List of tag annotations
 
     Example:
         ```python
@@ -48,6 +50,9 @@ class ImageAnnotation(BaseModel):
             ],
             ellipses=[
                 Ellipse(label="defect", cx=500, cy=600, rx=50, ry=30)
+            ],
+            tags=[
+                Tag(label="interesting", source="manual", attributes=[])
             ]
         )
         ```
@@ -65,3 +70,4 @@ class ImageAnnotation(BaseModel):
     masks: List[Mask] = []
     polylines: List[Polyline] = []
     ellipses: List[Ellipse] = []
+    tags: List[Tag] = []

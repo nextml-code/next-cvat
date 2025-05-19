@@ -18,6 +18,7 @@ from .types import (
     Polygon,
     Polyline,
     Project,
+    Tag,
     Task,
 )
 
@@ -182,6 +183,21 @@ class Annotations(BaseModel):
                     Ellipse(**ellipse.attrib, attributes=ellipse_attributes)
                 )
 
+            # Parse tags
+            tags = []
+            for tag in image.findall("tag"):
+                tag_attributes = [
+                    Attribute(name=attr.get("name"), value=attr.text)
+                    for attr in tag.findall("attribute")
+                ]
+                tags.append(
+                    Tag(
+                        label=tag.get("label"),
+                        source=tag.get("source", "manual"),
+                        attributes=tag_attributes,
+                    )
+                )
+
             # Get job_id from task_job_mapping if available
             task_id = image.get("task_id")
             job_id = task_job_mapping.get(task_id) if task_id else None
@@ -200,6 +216,7 @@ class Annotations(BaseModel):
                     masks=masks,
                     polylines=polylines,
                     ellipses=ellipses,
+                    tags=tags,
                 )
             )
 
@@ -365,6 +382,18 @@ class Annotations(BaseModel):
                         attr_elem.set("name", attr.name)
                         attr_elem.text = attr.value
 
+            # Add tags
+            for tag in image.tags:
+                tag_elem = ElementTree.SubElement(image_elem, "tag")
+                tag_elem.set("label", tag.label)
+                tag_elem.set("source", tag.source)
+
+                if tag.attributes:
+                    for attr in tag.attributes:
+                        attr_elem = ElementTree.SubElement(tag_elem, "attribute")
+                        attr_elem.set("name", attr.name)
+                        attr_elem.text = attr.value
+
             root.append(image_elem)
 
         # Create XML tree and save to file
@@ -464,7 +493,6 @@ class Annotations(BaseModel):
         """
         completed_task_ids = self.get_completed_task_ids()
         return [image for image in self.images if image.task_id in completed_task_ids]
-
 
     def create_cvat_link(self, image_name: str) -> str:
         """Create a CVAT link for the given image name.
