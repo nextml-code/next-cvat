@@ -1493,6 +1493,20 @@ They can be created from numpy arrays or PIL Images and support various operatio
             </p>
           </td>
         </tr>
+        <tr>
+          <td><code><span title="next_cvat.types.image_annotation.ImageAnnotation.tags">tags</span></code></td>
+          <td class="doc-attribute-details">
+            <div class="doc-md-description">
+              <p>List of tag annotations</p>
+            </div>
+            <p>
+                <span class="doc-attribute-annotation">
+                  <b>TYPE:</b>
+                    <code><span title="typing.List">List</span>[<span title="next_cvat.types.tag.Tag">Tag</span>]</code>
+                </span>
+            </p>
+          </td>
+        </tr>
     </tbody>
   </table>
 
@@ -1514,6 +1528,9 @@ They can be created from numpy arrays or PIL Images and support various operatio
     <span class="p">],</span>
     <span class="n">ellipses</span><span class="o">=</span><span class="p">[</span>
         <span class="n">Ellipse</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;defect&quot;</span><span class="p">,</span> <span class="n">cx</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">cy</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">rx</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ry</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">tags</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Tag</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;interesting&quot;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s2">&quot;manual&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">[])</span>
     <span class="p">]</span>
 <span class="p">)</span>
 </code></pre></div>
