@@ -25,6 +25,11 @@ def download(
         "-f",
         help="Load credentials from a specific .env file",
     ),
+    include_images: bool = typer.Option(
+        True,
+        "--include-images",
+        help="Include images in the dataset",
+    ),
 ):
     """
     Download annotations and images from a CVAT project.
@@ -35,4 +40,6 @@ def download(
         username=settings_.username,
         password=settings_.password,
         token=settings_.token,
-    ).download_(project_id=project_id, dataset_path=dataset_path)
+    ).download_(
+        project_id=project_id, dataset_path=dataset_path, include_images=include_images
+    )

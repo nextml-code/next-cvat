@@ -85,8 +85,10 @@ class Client(BaseModel):
     def project(self, project_id: int) -> Project:
         return Project(client=self, id=project_id)
 
-    def download_(self, project_id, dataset_path):
-        return self.project(project_id=project_id).download_(dataset_path)
+    def download_(self, project_id, dataset_path, include_images=True):
+        return self.project(project_id=project_id).download_(
+            dataset_path=dataset_path, include_images=include_images
+        )
 
 
 Project.model_rebuild()
