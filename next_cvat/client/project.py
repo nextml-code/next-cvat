@@ -29,7 +29,7 @@ class Project(BaseModel):
         with self.client.cvat_client() as client:
             yield client.projects.retrieve(self.id)
 
-    def download_(self, dataset_path: Union[str, Path]) -> Project:
+    def download_(self, dataset_path: Union[str, Path], include_images=True) -> Project:
         """Download project data to the specified path.
 
         Args:
@@ -49,7 +49,7 @@ class Project(BaseModel):
                 cvat_project.export_dataset(
                     format_name="CVAT for images 1.1",
                     filename=temp_file_path,
-                    include_images=True,
+                    include_images=include_images,
                 )
 
                 # Extract contents
