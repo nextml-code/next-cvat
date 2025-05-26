@@ -12,6 +12,7 @@ from .types import (
     LabelAttribute,
     Mask,
     Polygon,
+    Polyline,
     Project,
     Tag,
     Task,

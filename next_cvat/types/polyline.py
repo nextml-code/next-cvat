@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import List, Tuple
 
+import numpy as np
+from cvat_sdk.api_client import models
 from pydantic import BaseModel, field_validator
 
 from .attribute import Attribute
@@ -33,3 +35,19 @@ class Polyline(BaseModel):
 
     def bottommost(self) -> float:
         return max([y for _, y in self.points])
+
+    def request(
+        self, frame: int, label_id: int, group: int = 0
+    ) -> models.LabeledShapeRequest:
+        return models.LabeledShapeRequest(
+            type="polyline",
+            occluded=bool(self.occluded),
+            points=np.array(self.points).flatten().tolist(),
+            rotation=0.0,
+            outside=False,
+            attributes=[attr.model_dump() for attr in self.attributes],
+            group=group,
+            source=self.source,
+            frame=frame,
+            label_id=label_id,
+        )
