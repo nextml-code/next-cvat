@@ -51,6 +51,22 @@ class JobAnnotations(BaseModel, arbitrary_types_allowed=True):
 
         return self
 
+    def add_tag_(
+        self,
+        tag: next_cvat.Tag,
+        image_name: str,
+        group: int = 0,
+    ) -> JobAnnotations:
+        label = self.job.task.project.label(name=tag.label)
+
+        frame = self.job.task.frame(image_name=image_name)
+
+        self.annotations["tags"].append(
+            tag.request(frame=frame.id, label_id=label.id, group=group)
+        )
+
+        return self
+
     def request(self) -> models.LabeledDataRequest:
         request = models.LabeledDataRequest()
         request.version = self.annotations["version"]
