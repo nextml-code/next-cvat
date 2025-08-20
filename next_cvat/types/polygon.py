@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import List, Tuple
 
 import numpy as np
+from cvat_sdk.api_client import models
 from PIL import Image, ImageDraw
 from pydantic import BaseModel, field_validator
 
@@ -11,10 +12,10 @@ from .attribute import Attribute
 
 class Polygon(BaseModel):
     """A polygon annotation in CVAT.
-    
+
     Polygons are used to define regions in images using a series of connected points.
     They can be converted to segmentation masks and support various geometric operations.
-    
+
     Attributes:
         label: The label/class name for this polygon
         source: The source of this annotation (e.g. "manual", "automatic")
@@ -23,6 +24,7 @@ class Polygon(BaseModel):
         z_order: The z-order/layer of this polygon
         attributes: List of additional attributes for this polygon
     """
+
     label: str
     source: str
     occluded: int
@@ -33,7 +35,7 @@ class Polygon(BaseModel):
     @field_validator("points", mode="before")
     def parse_points(cls, v):
         """Parse points from string format if needed.
-        
+
         Handles conversion from CVAT's string format ("x1,y1;x2,y2;...") to list of tuples.
         """
         if isinstance(v, str):
@@ -84,11 +86,37 @@ class Polygon(BaseModel):
 
     def polygon(self) -> Polygon:
         """Get this polygon.
-        
+
         This method exists for compatibility with other shape types that can be
         converted to polygons.
-        
+
         Returns:
             This polygon instance
         """
         return self
+
+    def request(
+        self, frame: int, label_id: int, group: int = 0
+    ) -> models.LabeledShapeRequest:
+        """Convert the polygon to a CVAT shape format.
+
+        Args:
+            frame: The frame number this polygon appears in
+            label_id: The ID of the label this polygon is associated with
+            group: The group ID for this shape (default: 0)
+
+        Returns:
+            LabeledShapeRequest object for CVAT API
+        """
+        return models.LabeledShapeRequest(
+            type="polygon",
+            occluded=bool(self.occluded),
+            points=np.array(self.points).flatten().tolist(),
+            rotation=0.0,
+            outside=False,
+            attributes=[attr.model_dump() for attr in self.attributes],
+            group=group,
+            source=self.source,
+            frame=frame,
+            label_id=label_id,
+        )
