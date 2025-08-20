@@ -20,11 +20,26 @@ class AccessToken(BaseModel):
     @classmethod
     def from_client_cookies(cls, cookies: Dict, headers: Dict) -> AccessToken:
         """Create an AccessToken from CVAT client cookies and headers."""
+        # For basic auth, there might not be an Authorization header
+        # In this case, we'll use the session-based authentication
+        api_key = headers.get("Authorization", "session-based-auth")
+
+        # Extract expires from sessionid cookie (Morsel object)
+        sessionid_cookie = cookies["sessionid"]
+        expires_str = sessionid_cookie.get("expires")
+        if expires_str:
+            expires_at = parsedate_to_datetime(expires_str)
+        else:
+            # Fallback to a reasonable default if no expires is set
+            from datetime import datetime, timedelta
+
+            expires_at = datetime.now() + timedelta(days=14)
+
         return cls(
-            sessionid=str(cookies["sessionid"]),
-            csrftoken=str(cookies["csrftoken"]),
-            api_key=headers["Authorization"],
-            expires_at=parsedate_to_datetime(cookies["sessionid"]["expires"]),
+            sessionid=str(sessionid_cookie.value),
+            csrftoken=str(cookies["csrftoken"].value),
+            api_key=api_key,
+            expires_at=expires_at,
         )
 
     def serialize(self) -> str:
