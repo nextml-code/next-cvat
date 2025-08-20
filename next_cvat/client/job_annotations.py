@@ -86,5 +86,8 @@ class JobAnnotations(BaseModel, arbitrary_types_allowed=True):
     def request(self) -> models.LabeledDataRequest:
         request = models.LabeledDataRequest()
         request.version = self.annotations["version"]
+        request.tags = self.annotations["tags"]
+        request.shapes = self.annotations["shapes"]
+        request.tracks = self.annotations["tracks"]
 
         return request
