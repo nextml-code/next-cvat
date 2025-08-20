@@ -84,22 +84,7 @@ class JobAnnotations(BaseModel, arbitrary_types_allowed=True):
         return self
 
     def request(self) -> models.LabeledDataRequest:
-        def remove_id_from_dict(item_dict):
-            """Remove 'id' field from dictionary if present"""
-            if isinstance(item_dict, dict):
-                return {k: v for k, v in item_dict.items() if k != "id"}
-            return item_dict
-
         request = models.LabeledDataRequest()
         request.version = self.annotations["version"]
-
-        # Remove ID fields from existing annotations
-        request.tags = [remove_id_from_dict(tag) for tag in self.annotations["tags"]]
-        request.shapes = [
-            remove_id_from_dict(shape) for shape in self.annotations["shapes"]
-        ]
-        request.tracks = [
-            remove_id_from_dict(track) for track in self.annotations["tracks"]
-        ]
 
         return request

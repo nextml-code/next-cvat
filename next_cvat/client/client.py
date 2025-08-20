@@ -62,9 +62,12 @@ class Client(BaseModel):
         with make_client(host="app.cvat.ai") as client:
             token = AccessToken.deserialize(self.token)
 
-            client.api_client.set_default_header(
-                "Authorization", f"Token {token.api_key}"
-            )
+            # Only set Authorization header if we have a real API key (not session-based)
+            if token.api_key != "session-based-auth":
+                client.api_client.set_default_header(
+                    "Authorization", f"Token {token.api_key}"
+                )
+
             client.api_client.cookies["sessionid"] = token.sessionid
             client.api_client.cookies["csrftoken"] = token.csrftoken
 
