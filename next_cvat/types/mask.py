@@ -182,7 +182,7 @@ class Mask(BaseModel):
         Returns:
             A numpy 2D array of booleans representing the decoded mask
         """
-        counts = np.array([int(x) for x in self.rle.split(",")])
+        counts = np.array([int(x) for x in self.rle.split(",")] if self.rle != "" else [])
         total_pixels = self.height * self.width
         
         # Calculate positions where values change
