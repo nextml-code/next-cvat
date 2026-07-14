@@ -15,6 +15,15 @@ CVAT_USERNAME=username
 CVAT_PASSWORD=password
 ```
 
+By default the client connects to `https://app.cvat.ai`. To use a self-hosted
+server, set `CVAT_HOST` (a bare host is fine — `https://` is assumed):
+
+```bash
+CVAT_HOST=https://cvat.nextml.com
+```
+
+You can also pass it directly: `next_cvat.Client(host="https://cvat.nextml.com", ...)`.
+
 If you don't want to use your username and password, you can create a token:
 
 ```bash
