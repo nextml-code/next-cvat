@@ -5,7 +5,7 @@ from typing import Any, Generator
 
 from cvat_sdk import Client as CVATClient
 from cvat_sdk import make_client
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 from next_cvat.access_token import AccessToken
 from next_cvat.settings import settings
@@ -16,11 +16,32 @@ from .job_annotations import JobAnnotations
 from .project import Project
 from .task import Task
 
+#: Default CVAT server. Override via the ``CVAT_HOST`` environment variable
+#: (e.g. ``CVAT_HOST=https://cvat.nextml.com``) or the ``host=`` argument.
+DEFAULT_CVAT_HOST = "https://app.cvat.ai"
+
 
 class Client(BaseModel):
     username: str | None = None
     password: str | None = None
     token: str | None = None
+    host: str = DEFAULT_CVAT_HOST
+
+    @field_validator("host", mode="before")
+    @classmethod
+    def _normalize_host(cls, value: str | None) -> str:
+        """Default empty hosts and ensure an explicit scheme is present.
+
+        Passing a scheme (``https://`` / ``http://``) lets the CVAT SDK skip its
+        flaky HTTPS/HTTP auto-detection, which otherwise times out and raises
+        ``InvalidHostException`` when the server is slow to answer.
+        """
+        if value is None or value == "":
+            return DEFAULT_CVAT_HOST
+        value = value.rstrip("/")
+        if not value.startswith(("http://", "https://")):
+            value = f"https://{value}"
+        return value
 
     @classmethod
     def from_env(cls, env_prefix: str | None = None) -> Client:
@@ -52,14 +73,14 @@ class Client(BaseModel):
     @contextmanager
     def basic_cvat_client(self) -> Generator[CVATClient, None, None]:
         with make_client(
-            host="app.cvat.ai", credentials=(self.username, self.password)
+            host=self.host, credentials=(self.username, self.password)
         ) as client:
             client.login((self.username, self.password))
             yield client
 
     @contextmanager
     def token_cvat_client(self) -> Generator[CVATClient, None, None]:
-        with make_client(host="app.cvat.ai") as client:
+        with make_client(host=self.host) as client:
             token = AccessToken.deserialize(self.token)
 
             # Only set Authorization header if we have a real API key (not session-based)
