@@ -5,6 +5,7 @@ from typing import Any, Generator
 
 from cvat_sdk import Client as CVATClient
 from cvat_sdk import make_client
+from cvat_sdk.api_client.exceptions import ApiException
 from pydantic import BaseModel, field_validator
 
 from next_cvat.access_token import AccessToken
@@ -26,6 +27,11 @@ class Client(BaseModel):
     password: str | None = None
     token: str | None = None
     host: str = DEFAULT_CVAT_HOST
+
+    #: Organization slug (e.g. ``nextml``) that requests are made in the context of.
+    #: ``None`` uses whatever organization the requested resource belongs to, ``""``
+    #: the personal workspace. Override via ``CVAT_ORGANIZATION``.
+    organization: str | None = None
 
     @field_validator("host", mode="before")
     @classmethod
@@ -76,23 +82,55 @@ class Client(BaseModel):
             host=self.host, credentials=(self.username, self.password)
         ) as client:
             client.login((self.username, self.password))
+            client.organization_slug = self.organization
             yield client
 
     @contextmanager
     def token_cvat_client(self) -> Generator[CVATClient, None, None]:
         with make_client(host=self.host) as client:
-            token = AccessToken.deserialize(self.token)
+            try:
+                token = AccessToken.deserialize(self.token)
+            except ValueError:
+                # A personal access token created in the CVAT UI, rather than a
+                # session serialized by create_token().
+                self.authenticate_with_access_token_(client, self.token)
+            else:
+                # Only set Authorization header if we have a real API key (not session-based)
+                if token.api_key != "session-based-auth":
+                    client.api_client.set_default_header(
+                        "Authorization", f"Token {token.api_key}"
+                    )
 
-            # Only set Authorization header if we have a real API key (not session-based)
-            if token.api_key != "session-based-auth":
-                client.api_client.set_default_header(
-                    "Authorization", f"Token {token.api_key}"
-                )
+                client.api_client.cookies["sessionid"] = token.sessionid
+                client.api_client.cookies["csrftoken"] = token.csrftoken
 
-            client.api_client.cookies["sessionid"] = token.sessionid
-            client.api_client.cookies["csrftoken"] = token.csrftoken
-
+            client.organization_slug = self.organization
             yield client
+
+    @staticmethod
+    def authenticate_with_access_token_(client: CVATClient, token: str) -> str:
+        """Authenticate ``client`` with a personal access token, returning the scheme used.
+
+        Which scheme a token wants depends on how the server issued it: tokens from
+        ``POST /api/auth/login`` are ``Token``, while personal access tokens created in
+        the UI are ``Bearer``. They are not reliably distinguishable by shape, so try
+        both and keep whichever the server accepts.
+        """
+        for scheme in ("Bearer", "Token"):
+            client.api_client.set_default_header("Authorization", f"{scheme} {token}")
+            try:
+                client.users.retrieve_current_user()
+            except ApiException as exception:
+                if exception.status not in (401, 403):
+                    raise
+            else:
+                return scheme
+
+        client.api_client.default_headers.pop("Authorization", None)
+        raise ValueError(
+            "The token was rejected by the server as both a Bearer and a Token "
+            "credential. It may have expired, or belong to a different CVAT host."
+        )
 
     def create_token(self) -> AccessToken:
         with self.basic_cvat_client() as client:

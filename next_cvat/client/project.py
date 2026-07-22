@@ -88,8 +88,12 @@ class Project(BaseModel):
             # Get project details to get the organization ID
             project = client.projects.retrieve(self.id)
 
-            # Set organization header
-            client.api_client.set_default_header("X-Organization", "NextMLAB")
+            # Creating a task in an organization's project requires that organization's
+            # context. Unless one was configured explicitly, use the project's own.
+            if self.client.organization is None and project.organization is not None:
+                client.organization_slug = client.organizations.retrieve(
+                    project.organization
+                ).slug
 
             # Create task in the project
             spec = models.TaskWriteRequest(

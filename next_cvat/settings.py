@@ -16,5 +16,6 @@ def settings(env_file: str | None = ".env.cvat.secrets", env_prefix: str | None 
         password: str | None = None
         token: str | None = None
         host: str | None = None
+        organization: str | None = None
 
     return Settings()
